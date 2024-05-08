@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:petlv/screens/home_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -53,6 +54,9 @@ class SignUpScreenState extends State<SignUpScreen> {
                     // <-- Gunakan FirebaseAuth.instance
                     email: _emailController.text,
                     password: _passwordController.text,
+                  );
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
                   );
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'weak-password') {
