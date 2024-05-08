@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "88455355485",
+    "firebase_url": "https://petlv-db-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "petlv-db",
+    "storage_bucket": "petlv-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:88455355485:android:88c77a53c99118e28381b4",
+        "android_client_info": {
+          "package_name": "com.example.petlv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKxH0AsIX0wV4dfcXqRSxMAe-Mm31pU0k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
