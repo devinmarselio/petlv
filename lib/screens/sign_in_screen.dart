@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:petlv/Screen/home_screen.dart';
-import 'package:petlv/Screen/sign_up_screen.dart';
+import 'package:petlv/screens/home_screen.dart';
+import 'package:petlv/screens/sign_up_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({Key? key});
