@@ -188,7 +188,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: Text('Take anew photo'),
+              title: Text('Take a new photo'),
               onTap: () async {
                 Navigator.of(context).pop();
                 final pickedFile =
