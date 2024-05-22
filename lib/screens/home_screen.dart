@@ -27,15 +27,24 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: Image.asset(
+          'assets/images/petlv_logo_1_removebg.png',
+          width: 10,
+          height: 10,
+        ),
+        backgroundColor: Theme.of(context).colorScheme.background,
         actions: [
           IconButton(
             onPressed: () async {
               bool result = await signOut(context);
               if (result) signInScreenState.userCredential.value = '';
             },
-            icon: const Icon(Icons.logout),
+            icon: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(width: 2, color: Colors.black)),
+              child: Icon(Icons.person_2_outlined),
+            ),
           ),
         ],
       ),
