@@ -29,8 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Image.asset(
           'assets/images/petlv_logo_1_removebg.png',
-          width: 10,
-          height: 10,
+          width: 200,
+          height: 100,
         ),
         backgroundColor: Theme.of(context).colorScheme.background,
         actions: [

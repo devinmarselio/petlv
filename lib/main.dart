@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/firebase_options.dart';
+import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/home_screen.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 import 'package:petlv/screens/sign_up_screen.dart';
@@ -31,7 +32,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.hasData) {
             return const HomeScreen();
           } else {
-            return const SignUpScreen();
+            return const SignInScreen();
           }
         },
       ),
