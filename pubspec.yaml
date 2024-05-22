@@ -38,6 +38,9 @@ dependencies:
   google_sign_in: ^6.2.1
   firebase_core: ^2.31.0
   firebase_auth: ^4.19.5
+  image_picker: ^1.1.1
+  firebase_storage: ^11.7.6
+  cloud_firestore: ^4.17.4
 
 dev_dependencies:
   flutter_test:
@@ -67,6 +70,11 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/google_icon.png
+    - assets/images/petlv_logo_1.png
+    - assets/images/petlv_logo_2.png
+    - assets/images/petlv_logo_1_removebg.png
+    - assets/images/petlv_logo_2_removebg.png
+    
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
