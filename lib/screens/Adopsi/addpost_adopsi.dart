@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:petlv/screens/home_screen.dart';
 
 class AddPostAdoptScreen extends StatefulWidget {
   @override
@@ -18,6 +19,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   final _sizeController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
+  String? _selectedType;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final List<String> _typeItems = ['Dog', 'Cat'];
@@ -26,6 +28,13 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  ),
+              icon: Icon(Icons.arrow_back))
+        ],
         title: Text('Adoption Post'),
       ),
       body: SingleChildScrollView(
@@ -46,7 +55,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
               SizedBox(height: 16),
               Text('Type'),
               DropdownButtonFormField<String>(
-                value: _typeItems.first,
+                value: _selectedType,
                 decoration: InputDecoration(
                   hintText: 'Select type',
                   border: OutlineInputBorder(
@@ -60,7 +69,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                 }).toList(),
                 onChanged: (String? newType) {
                   setState(() {
-                    _typeController.text = newType!;
+                    _selectedType = newType;
                   });
                 },
               ),
@@ -147,7 +156,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                         final String? userEmail = user?.email;
                         await posts.add({
                           'name': _nameController.text,
-                          'type': _typeController.text,
+                          'type': _selectedType,
                           'age': _ageController.text,
                           'size': _sizeController.text,
                           'description': _postTextController.text,
@@ -159,7 +168,10 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                           SnackBar(
                               content: Text('Image uploaded successfully')),
                         );
-                        Navigator.pop(context);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                        );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Error uploading image: $e')),

@@ -16,17 +16,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   SignInScreenState signInScreenState = SignInScreenState();
 
-  Future<bool> signOut(BuildContext context) async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const SignInScreen()));
-      return true;
-    } on Exception catch (_) {
-      return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,13 +30,13 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             onPressed: () async => Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                  builder: (context) => SizedBox()), // ProfilScreen
+                  builder: (context) => const SizedBox()), // ProfilScreen
             ),
             icon: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
                   border: Border.all(width: 2, color: Colors.black)),
-              child: Icon(Icons.person_2_outlined),
+              child: const Icon(Icons.person_2_outlined),
             ),
           ),
         ],
@@ -68,8 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     offset: const Offset(4, 1)),
               ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
+            child: const Padding(
+              padding: EdgeInsets.all(10.0),
               child: Column(
                 children: [
                   Align(
@@ -92,85 +81,96 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-          StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('posts')
-                .orderBy('timestamp', descending: true)
-                .snapshots(),
-            builder:
-                (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              // Check error
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text('Some error occured ${snapshot.error}'),
-                );
-              }
+          Expanded(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('posts')
+                  .orderBy('timestamp', descending: true)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                // Check error
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Some error occured ${snapshot.error}'),
+                  );
+                }
 
-              if (snapshot.hasData) {
-                // Get data
-                QuerySnapshot querySnapshot = snapshot.data!;
-                List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+                if (snapshot.hasData) {
+                  // Get data
+                  QuerySnapshot querySnapshot = snapshot.data!;
+                  List<QueryDocumentSnapshot> documents = querySnapshot.docs;
 
-                //Convert the documents to Maps
-                List<Map<String, dynamic>> items = documents
-                    .map((e) => {
-                          'id': e.id,
-                          'name': e['name'],
-                          'type': e['type'],
-                          'age': e['age'],
-                          'size': e['size'],
-                          'description': e['description'],
-                          'image_url': e['image_url'],
-                          'email': e['email'],
-                          'timestamp': e['timestamp'],
-                        })
-                    .toList();
-                return ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    Map thisItem = items[index];
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GridView.count(
-                        crossAxisCount: 2,
-                        children: [
-                          Card(
-                            child: Column(
-                              children: [
-                                Container(
-                                    child: Image.network(
+                  //Convert the documents to Maps
+                  List<Map<String, dynamic>> items = documents
+                      .map((e) => {
+                            'id': e.id,
+                            'name': e['name'],
+                            'type': e['type'],
+                            'age': e['age'],
+                            'size': e['size'],
+                            'description': e['description'],
+                            'image_url': e['image_url'],
+                            'email': e['email'],
+                            'timestamp': e['timestamp'],
+                          })
+                      .toList();
+                  return GridView.builder(
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: MediaQuery.of(context).orientation ==
+                              Orientation.landscape
+                          ? 3
+                          : 2,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: (1 / 1.2),
+                    ),
+                    itemCount: items.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      Map thisItem = items[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: Column(
+                            children: [
+                              Container(
+                                child: Image.network(
                                   thisItem['image_url'],
-                                  height: 250,
-                                  width: 250,
-                                )),
-                                Row(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text(
+                                  height: 150,
+                                  width: 150,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Column(
+                                    children: [
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
                                           '${thisItem['name']}',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        Text('${thisItem['age']} years old')
-                                      ],
-                                    ),
-                                    Icon(Icons.bookmark_outline_rounded)
-                                  ],
-                                ),
-                              ],
-                            ),
+                                      ),
+                                      Text('${thisItem['age']} month old')
+                                    ],
+                                  ),
+                                  Expanded(child: SizedBox()),
+                                  const Icon(Icons.bookmark_outline_rounded)
+                                ],
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
+                        ),
+                      );
+                    },
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+              },
+            ),
           ),
         ],
       ),
@@ -191,12 +191,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(width: 2, color: Colors.black)),
-                child: Icon(Icons.add),
+                child: const Icon(Icons.add),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 10,
               ),
-              Text(
+              const Text(
                 'New Post',
                 style: TextStyle(fontWeight: FontWeight.bold),
               )
@@ -215,6 +215,6 @@ Widget timestaps(Map thisItem) {
 
   return Text(
     '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}',
-    style: TextStyle(fontSize: 12),
+    style: const TextStyle(fontSize: 12),
   );
 }
