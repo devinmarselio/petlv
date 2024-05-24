@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -75,11 +72,23 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyBR2bX5Y2ZCylTEGR4iN2KYvL4HIa6cWdQ',
-    appId: '1:88455355485:ios:ea29b8a754b992808381b4',
+    appId: '1:88455355485:ios:4cba8d6912e4a9f38381b4',
     messagingSenderId: '88455355485',
     projectId: 'petlv-db',
     databaseURL: 'https://petlv-db-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'petlv-db.appspot.com',
-    iosBundleId: 'com.example.petlv.RunnerTests',
+    iosBundleId: 'com.example.petlv',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyAkryosiJ6r7qkXEw5BGXFnrpLrxlLIVrU',
+    appId: '1:88455355485:web:7cf542c4847626218381b4',
+    messagingSenderId: '88455355485',
+    projectId: 'petlv-db',
+    authDomain: 'petlv-db.firebaseapp.com',
+    databaseURL: 'https://petlv-db-default-rtdb.asia-southeast1.firebasedatabase.app',
+    storageBucket: 'petlv-db.appspot.com',
+    measurementId: 'G-3XGQBCNEWY',
+  );
+
 }
