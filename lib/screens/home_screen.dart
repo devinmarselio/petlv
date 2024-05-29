@@ -104,21 +104,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   //Convert the documents to Maps
                   List<Map<String, dynamic>> items = documents
                       .map((e) => {
-                            'id': e.id,
-                            'name': e['name'],
-                            'type': e['type'],
-                            'age': e['age'],
-                            'size': e['size'],
-                            'description': e['description'],
-                            'image_url': e['image_url'],
-                            'email': e['email'],
-                            'timestamp': e['timestamp'],
-                          })
+                    'id': e.id,
+                    'name': e['name'],
+                    'type': e['type'],
+                    'age': e['age'],
+                    'size': e['size'],
+                    'description': e['description'],
+                    'image_url': e['image_url'],
+                    'email': e['email'],
+                    'timestamp': e['timestamp'],
+                  })
                       .toList();
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: MediaQuery.of(context).orientation ==
-                              Orientation.landscape
+                          Orientation.landscape
                           ? 3
                           : 2,
                       crossAxisSpacing: 8,
@@ -134,10 +134,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Column(
                             children: [
                               Container(
-                                child: Image.network(
-                                  thisItem['image_url'],
-                                  height: 150,
-                                  width: 150,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.network(
+                                    thisItem['image_url'],
+                                    height: 150,
+                                    width: 150,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
                               Row(
