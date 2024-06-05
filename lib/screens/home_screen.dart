@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/Adopsi/detailpost_adopsi.dart';
+import 'package:petlv/screens/profile_screen.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,23 +21,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
         title: Image.asset(
+          color: Theme.of(context).colorScheme.secondary,
           'assets/images/petlv_logo_1_removebg.png',
           width: 100,
           height: 100,
         ),
-        backgroundColor: Theme.of(context).colorScheme.background,
         actions: [
           IconButton(
             onPressed: () async => Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                  builder: (context) => const SizedBox()), // ProfilScreen
+                  builder: (context) => const ProfileScreen()), // ProfilScreen
             ),
             icon: Container(
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  border: Border.all(width: 2, color: Colors.black)),
+                  border: Border.all(
+                      width: 2,
+                      color: Theme.of(context).colorScheme.secondary)),
               child: const Icon(Icons.person_2_outlined),
             ),
           ),
@@ -46,13 +51,16 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.background,
               borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(10),
                   bottomRight: Radius.circular(10)),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .secondary
+                        .withOpacity(0.2),
                     spreadRadius: 2,
                     blurRadius: 5,
                     offset: const Offset(4, 1)),
@@ -132,8 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
-                          onTap: () async =>
-                              Navigator.of(context).push(
+                          onTap: () async => Navigator.of(context).push(
                             MaterialPageRoute(
                                 builder: (context) =>
                                     detailPostAdoptScreen()), // ProfilScreen
@@ -189,11 +196,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(width: 2)),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+              width: 3, color: Theme.of(context).colorScheme.secondary),
+        ),
         width: 150,
         child: FloatingActionButton(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.background,
           onPressed: () async => Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => AddPostAdoptScreen()),
           ),
@@ -203,15 +212,22 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    border: Border.all(width: 2, color: Colors.black)),
-                child: const Icon(Icons.add),
+                    border: Border.all(
+                        width: 2,
+                        color: Theme.of(context).colorScheme.secondary)),
+                child: Icon(
+                  Icons.add,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
               const SizedBox(
                 width: 10,
               ),
-              const Text(
+              Text(
                 'New Post',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.secondary),
               )
             ],
           ),
