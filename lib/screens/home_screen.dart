@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
+import 'package:petlv/screens/Adopsi/detailpost_adopsi.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -104,21 +105,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   //Convert the documents to Maps
                   List<Map<String, dynamic>> items = documents
                       .map((e) => {
-                    'id': e.id,
-                    'name': e['name'],
-                    'type': e['type'],
-                    'age': e['age'],
-                    'size': e['size'],
-                    'description': e['description'],
-                    'image_url': e['image_url'],
-                    'email': e['email'],
-                    'timestamp': e['timestamp'],
-                  })
+                            'id': e.id,
+                            'name': e['name'],
+                            'type': e['type'],
+                            'age': e['age'],
+                            'size': e['size'],
+                            'description': e['description'],
+                            'image_url': e['image_url'],
+                            'email': e['email'],
+                            'timestamp': e['timestamp'],
+                          })
                       .toList();
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: MediaQuery.of(context).orientation ==
-                          Orientation.landscape
+                              Orientation.landscape
                           ? 3
                           : 2,
                       crossAxisSpacing: 8,
@@ -130,40 +131,48 @@ class _HomeScreenState extends State<HomeScreen> {
                       Map thisItem = items[index];
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Card(
-                          child: Column(
-                            children: [
-                              Container(
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  child: Image.network(
-                                    thisItem['image_url'],
-                                    height: 150,
-                                    width: 150,
-                                    fit: BoxFit.cover,
+                        child: GestureDetector(
+                          onTap: () async =>
+                              Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    detailPostAdoptScreen()), // ProfilScreen
+                          ),
+                          child: Card(
+                            child: Column(
+                              children: [
+                                Container(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.network(
+                                      thisItem['image_url'],
+                                      height: 150,
+                                      width: 150,
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Row(
-                                children: [
-                                  Column(
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          '${thisItem['name']}',
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                Row(
+                                  children: [
+                                    Column(
+                                      children: [
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            '${thisItem['name']}',
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
                                         ),
-                                      ),
-                                      Text('${thisItem['age']} month old')
-                                    ],
-                                  ),
-                                  Expanded(child: SizedBox()),
-                                  const Icon(Icons.bookmark_outline_rounded)
-                                ],
-                              ),
-                            ],
+                                        Text('${thisItem['age']} month old')
+                                      ],
+                                    ),
+                                    Expanded(child: SizedBox()),
+                                    const Icon(Icons.bookmark_outline_rounded)
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       );
