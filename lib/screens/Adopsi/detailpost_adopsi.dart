@@ -1,8 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 class detailPostAdoptScreen extends StatefulWidget {
-  const detailPostAdoptScreen({super.key});
+  final String name;
+  final String type;
+  final String age;
+  final String size;
+  final String description;
+  final String image_url;
+  final Timestamp timestamp;
+
+  const detailPostAdoptScreen(
+      {super.key,
+      required this.name,
+      required this.type,
+      required this.age,
+      required this.size,
+      required this.description,
+      required this.image_url, required this.timestamp});
 
   @override
   State<detailPostAdoptScreen> createState() => _detailPostAdoptScreenState();
@@ -40,21 +59,28 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                   decoration: BoxDecoration(
                       border: Border.all(color: Colors.black),
                       borderRadius: BorderRadius.circular(20)),
-                  child: const Placeholder(),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.network(
+                        widget.image_url,
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   height: 20.0,
                 ),
                 // Nama Peliharaan
-                const Text(
-                  'Cicowalaca',
+                Text(
+                  widget.name,
                   style: TextStyle(fontSize: 20),
                 ),
                 const SizedBox(
                   height: 40.0,
                 ),
                 // Deskripsi Peliharaan
-                const Text('Description'),
+                Text(
+                  widget.description
+                ),
                 const SizedBox(
                   height: 20.0,
                 ),
@@ -77,18 +103,17 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
+                            Expanded(
+                              flex: 5,
                               child: Container(
                                 child: Text("Type"),
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
+                            Expanded(
+                              flex: 5,
                               child: Container(
-                                child: Text(": Anjing"),
+                                child: Text(": ${widget.type}"),
                               ),
                             ),
                           ],
@@ -101,18 +126,17 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           height: 2.0,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
+                            Expanded(
+                              flex: 5,
                               child: Container(
-                                child: Text("Type"),
+                                child: Text("Age"),
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
+                            Expanded(
+                              flex: 5,
                               child: Container(
-                                child: Text(": Anjing"),
+                                child: Text(": ${widget.age} Bulan"),
                               ),
                             ),
                           ],
@@ -125,18 +149,17 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           height: 2.0,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
+                            Expanded(
+                              flex: 5,
                               child: Container(
-                                child: Text("Type"),
+                                child: Text("Size"),
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
+                            Expanded(
+                              flex: 5,
                               child: Container(
-                                child: Text(": Anjing"),
+                                child: Text(": ${widget.size} kg"),
                               ),
                             ),
                           ],
@@ -149,24 +172,17 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           height: 2.0,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Align(
-                              alignment: Alignment.centerLeft,
+                            Expanded(
+                              flex: 5,
                               child: Container(
-                                child: Text("Type "),
+                                child: Text("Published Date"),
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.centerRight,
+                            Expanded(
+                              flex: 5,
                               child: Container(
-                                child: Text(":"),
-                              ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: Container(
-                                child: Text(" Anjing"),
+                                child: Text(": ${DateFormat('MM/dd/yyyy, hh:mm a').format(widget.timestamp.toDate())}"),
                               ),
                             ),
                           ],
