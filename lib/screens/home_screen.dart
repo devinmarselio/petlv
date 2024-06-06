@@ -104,12 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Text('Some error occured ${snapshot.error}'),
                   );
                 }
-
                 if (snapshot.hasData) {
                   // Get data
                   QuerySnapshot querySnapshot = snapshot.data!;
                   List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-
                   //Convert the documents to Maps
                   List<Map<String, dynamic>> items = documents
                       .map((e) => {
@@ -142,8 +140,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: GestureDetector(
                           onTap: () async => Navigator.of(context).push(
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    detailPostAdoptScreen()), // ProfilScreen
+                              builder: (context) => detailPostAdoptScreen(
+                                name: thisItem['name'],
+                                type: thisItem['type'],
+                                age: thisItem['age'],
+                                size: thisItem['size'],
+                                description: thisItem['description'],
+                                image_url: thisItem['image_url'],
+                                timestamp: thisItem['timestamp'],
+                              ),
+                            ), // ProfilScreen
                           ),
                           child: Card(
                             child: Column(
