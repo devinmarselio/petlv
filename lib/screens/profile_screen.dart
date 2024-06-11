@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:petlv/screens/home_screen.dart';
-import 'package:petlv/theme/theme.dart';
-import 'package:petlv/theme/theme_provider.dart';
+import 'package:petlv/screens/services/auth_services.dart';
+import 'package:petlv/screens/sign_in_screen.dart';
+import 'package:petlv/themes/theme.dart';
+import 'package:petlv/themes/theme_provider.dart';
 
 import 'package:provider/provider.dart';
 
@@ -15,7 +17,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  SignInScreenState signInScreenState = SignInScreenState();
   ThemeProvider themeProvider = ThemeProvider();
+
   @override
   Widget build(BuildContext context) {
     ThemeProvider themeProvider =
@@ -110,40 +114,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
               )
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8, right: 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8, right: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                      width: 350,
+                      child: ElevatedButton(
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                  Theme.of(context).colorScheme.primary)),
+                          onPressed: () {},
+                          child: Text(
+                            'User Settings',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary),
+                          ))),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
                     width: 350,
                     child: ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                                Theme.of(context).colorScheme.primary)),
-                        onPressed: () {},
-                        child: Text(
-                          'User Settings',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary),
-                        ))),
-                SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                    width: 350,
-                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(
+                            Theme.of(context).colorScheme.primary),
+                      ),
+                      onPressed: () {},
+                      child: Text(
+                        'Manage My Post',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 30),
+                    child: SizedBox(
+                      width: 350,
+                      child: ElevatedButton(
                         style: ButtonStyle(
                           backgroundColor: MaterialStatePropertyAll(
                               Theme.of(context).colorScheme.primary),
                         ),
-                        onPressed: () {},
+                        onPressed: () async {
+                          bool result = await AuthServices.signOut(context);
+                          if (result)
+                            signInScreenState.userCredential.value = '';
+                        },
                         child: Text(
-                          'Manage My Post',
+                          'Logout',
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.secondary),
-                        ))),
-              ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           )
         ],
