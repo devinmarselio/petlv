@@ -1,28 +1,28 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/Adopsi/detailpost_adopsi.dart';
+import 'package:petlv/screens/missing/addpost_missing.dart';
+import 'package:petlv/screens/missing/detailpost_missing.dart';
 import 'package:petlv/screens/profile_screen.dart';
-import 'package:petlv/screens/services/buttocks_bar.dart';
+
 import 'package:petlv/screens/sign_in_screen.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MissingScreen extends StatefulWidget {
+  const MissingScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MissingScreen> createState() => _MissingScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MissingScreenState extends State<MissingScreen> {
   SignInScreenState signInScreenState = SignInScreenState();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background,
@@ -75,18 +75,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Adoption',
+                      'Missing ',
                       style: TextStyle(
                           color: Color(0xffC67C4E),
                           fontWeight: FontWeight.bold,
                           fontSize: 34),
                     ),
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
-                        labelText: 'Search...',
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.search)),
                   ),
                 ],
               ),
@@ -95,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
-                  .collection('posts')
+                  .collection('posts2')
                   .orderBy('timestamp', descending: true)
                   .snapshots(),
               builder: (BuildContext context,
@@ -115,9 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       .map((e) => {
                             'id': e.id,
                             'name': e['name'],
-                            'type': e['type'],
-                            'age': e['age'],
-                            'size': e['size'],
+                            'lastseen': e['lastseen'],
                             'description': e['description'],
                             'image_url': e['image_url'],
                             'email': e['email'],
@@ -142,14 +134,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: GestureDetector(
                           onTap: () async => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => detailPostAdoptScreen(
-                                name: thisItem['name'],
-                                type: thisItem['type'],
-                                age: thisItem['age'],
-                                size: thisItem['size'],
-                                description: thisItem['description'],
-                                image_url: thisItem['image_url'],
-                                timestamp: thisItem['timestamp'],
+                              builder: (context) => DetailMissing(
+                                // name: thisItem['name'],
+                                // age: thisItem['age'],
+                                // size: thisItem['size'],
+                                // description: thisItem['description'],
+                                // image_url: thisItem['image_url'],
+                                // timestamp: thisItem['timestamp'],
                               ),
                             ), // ProfilScreen
                           ),
@@ -179,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ),
-                                        Text('${thisItem['age']} month old')
+
                                       ],
                                     ),
                                     Expanded(child: SizedBox()),
@@ -212,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.background,
           onPressed: () async => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => AddPostAdoptScreen()),
+            MaterialPageRoute(builder: (context) => AddPostMissing()),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

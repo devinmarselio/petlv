@@ -30,9 +30,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
           onPressed: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            );
+            Navigator.of(context).pop();
           },
           icon: const Icon(Icons.arrow_back_ios),
         ),
@@ -99,11 +97,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       width: MediaQuery.of(context).size.width / 3,
                       height: MediaQuery.of(context).size.width / 9,
                       child: const Center(
-                        child: Expanded(
-                            child: Text(
-                          'userName',
-                          style: TextStyle(fontSize: 18),
-                        )),
+                        child: Text(
+                                                  'userName',
+                                                  style: TextStyle(fontSize: 18),
+                                                ),
                       ),
                     ),
                     const SizedBox(

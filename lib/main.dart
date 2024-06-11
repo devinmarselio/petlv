@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/firebase_options.dart';
-import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/home_screen.dart';
+import 'package:petlv/screens/services/buttocks_bar.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 import 'package:petlv/screens/sign_up_screen.dart';
 import 'package:petlv/themes/theme.dart';
 import 'package:petlv/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return const HomeScreen();
+            return BottomNavBarScreen();
           } else {
             return const SignInScreen();
           }
