@@ -5,24 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/screens/home_screen.dart';
+import 'package:petlv/screens/missing/missing_screen.dart';
+import 'package:petlv/screens/services/buttocks_bar.dart';
 
-class AddPostAdoptScreen extends StatefulWidget {
+class AddPostMissing extends StatefulWidget {
   @override
-  _AddPostAdoptScreenState createState() => _AddPostAdoptScreenState();
+  _AddPostMissingState createState() => _AddPostMissingState();
 }
 
-class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
+class _AddPostMissingState extends State<AddPostMissing> {
   final _postTextController = TextEditingController();
-  final _typeController = TextEditingController();
   final _nameController = TextEditingController();
-  final _ageController = TextEditingController();
-  final _sizeController = TextEditingController();
+  final _lastseenController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
-  String? _selectedType;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final List<String> _typeItems = ['Dog', 'Cat'];
+
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +30,10 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
       appBar: AppBar(
         leading:
           IconButton(
-              onPressed: () {Navigator.of(context).pop();} ,
-              icon: Icon(Icons.arrow_back))
-        ,
-        title: Text('Adoption Post'),
+              onPressed: (){Navigator.of(context).pop();} ,
+              icon: Icon(Icons.arrow_back)),
+
+        title: Text('Missing Post'),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -51,48 +51,14 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                 ),
               ),
               SizedBox(height: 16),
-              Text('Type'),
-              DropdownButtonFormField<String>(
-                value: _selectedType,
-                decoration: InputDecoration(
-                  hintText: 'Select type',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                items: _typeItems.map((String type) {
-                  return DropdownMenuItem<String>(
-                    value: type,
-                    child: Text(type),
-                  );
-                }).toList(),
-                onChanged: (String? newType) {
-                  setState(() {
-                    _selectedType = newType;
-                  });
-                },
-              ),
-              SizedBox(height: 16),
-              Text('Age'),
+              Text('lastseen'),
               TextField(
-                controller: _ageController,
+                controller: _lastseenController,
                 decoration: InputDecoration(
-                  hintText: 'Enter age',
-                  suffixText: 'Month',
+                  hintText: 'Enter lastseen',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
-              ),
-              SizedBox(height: 16),
-              Text('Size'),
-              TextField(
-                controller: _sizeController,
-                decoration: InputDecoration(
-                  hintText: 'Enter size',
-                  suffixText: 'kg',
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                ),
-                maxLines: 1,
               ),
               SizedBox(height: 16),
               Text('Description'),
@@ -148,15 +114,13 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                             await uploadTask.ref.getDownloadURL();
 
                         // Add Firebase Cloud Firestore functionality here
-                        final CollectionReference posts =
-                            FirebaseFirestore.instance.collection('posts');
+                        final CollectionReference posts2 =
+                            FirebaseFirestore.instance.collection('posts2');
                         final User? user = _auth.currentUser;
                         final String? userEmail = user?.email;
-                        await posts.add({
+                        await posts2.add({
                           'name': _nameController.text,
-                          'type': _selectedType,
-                          'age': _ageController.text,
-                          'size': _sizeController.text,
+                          'lastseen': _lastseenController.text,
                           'description': _postTextController.text,
                           'image_url': downloadUrl,
                           'email': userEmail,
@@ -168,7 +132,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                         );
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                          MaterialPageRoute(builder: (context) => MissingScreen()),
                         );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -232,10 +196,8 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   @override
   void dispose() {
     _postTextController.dispose();
-    _typeController.dispose();
     _nameController.dispose();
-    _ageController.dispose();
-    _sizeController.dispose();
+    _lastseenController.dispose();
     super.dispose();
   }
 }
