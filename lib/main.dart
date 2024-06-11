@@ -6,8 +6,8 @@ import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/home_screen.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 import 'package:petlv/screens/sign_up_screen.dart';
-import 'package:petlv/theme/theme.dart';
-import 'package:petlv/theme/theme_provider.dart';
+import 'package:petlv/themes/theme.dart';
+import 'package:petlv/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() async {

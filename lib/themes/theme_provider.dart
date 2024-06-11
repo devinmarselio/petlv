@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:petlv/theme/theme.dart';
+import 'package:petlv/themes/theme.dart';
 
 class ThemeProvider with ChangeNotifier {
   ThemeData _themeData = lightMode;
