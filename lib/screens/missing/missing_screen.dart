@@ -114,6 +114,7 @@ class _MissingScreenState extends State<MissingScreen> {
                             'image_url': e['image_url'],
                             'email': e['email'],
                             'timestamp': e['timestamp'],
+                            'status': e['status']
                           })
                       .toList();
                   return GridView.builder(
@@ -170,11 +171,16 @@ class _MissingScreenState extends State<MissingScreen> {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ),
+                                        Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            '${thisItem['status']}',
+                                            style: const TextStyle(fontSize: 12),
+                                          ),
+                                        ),
 
                                       ],
                                     ),
-                                    Expanded(child: SizedBox()),
-                                    const Icon(Icons.bookmark_outline_rounded)
                                   ],
                                 ),
                               ],

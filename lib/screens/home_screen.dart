@@ -144,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder: (context) => detailPostAdoptScreen(
                                 name: thisItem['name'],
+                                email: thisItem['email'],
                                 type: thisItem['type'],
                                 age: thisItem['age'],
                                 size: thisItem['size'],
@@ -175,17 +176,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                           alignment: Alignment.centerLeft,
                                           child: Text(
                                             '${thisItem['name']}',
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold),
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                         Text('${thisItem['age']} month old')
                                       ],
                                     ),
                                     Expanded(child: SizedBox()),
-                                    const Icon(Icons.bookmark_outline_rounded)
+                                    IconButton(
+                                      icon: Icon(
+                                        thisItem['isFavorite'] != null && thisItem['isFavorite'] ? Icons.bookmark : Icons.bookmark_outline,
+                                        color: Theme.of(context).colorScheme.secondary,
+                                      ),
+                                      onPressed: () async {
+                                        setState(() {
+                                          thisItem['isFavorite'] = thisItem['isFavorite'] != null && thisItem['isFavorite'] ? false : true;
+                                        });
+                                        // Simpan status favorit ke Firestore
+                                        await FirebaseFirestore.instance
+                                            .collection('posts')
+                                            .doc(thisItem['id'])
+                                            .update({'isFavorite': thisItem['isFavorite']});
+                                      },
+                                    )
                                   ],
-                                ),
+                                )
                               ],
                             ),
                           ),
