@@ -144,6 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             MaterialPageRoute(
                               builder: (context) => detailPostAdoptScreen(
                                 name: thisItem['name'],
+                                email: thisItem['email'],
                                 type: thisItem['type'],
                                 age: thisItem['age'],
                                 size: thisItem['size'],
