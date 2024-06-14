@@ -25,6 +25,7 @@ class _MissingScreenState extends State<MissingScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.background,
         title: Image.asset(
           color: Theme.of(context).colorScheme.secondary,
@@ -136,13 +137,13 @@ class _MissingScreenState extends State<MissingScreen> {
                           onTap: () async => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => DetailMissing(
-                                // name: thisItem['name'],
-                                // age: thisItem['age'],
-                                // size: thisItem['size'],
-                                // description: thisItem['description'],
-                                // image_url: thisItem['image_url'],
-                                // timestamp: thisItem['timestamp'],
-                              ),
+                                  // name: thisItem['name'],
+                                  // age: thisItem['age'],
+                                  // size: thisItem['size'],
+                                  // description: thisItem['description'],
+                                  // image_url: thisItem['image_url'],
+                                  // timestamp: thisItem['timestamp'],
+                                  ),
                             ), // ProfilScreen
                           ),
                           child: Card(
@@ -175,10 +176,10 @@ class _MissingScreenState extends State<MissingScreen> {
                                           alignment: Alignment.centerLeft,
                                           child: Text(
                                             '${thisItem['status']}',
-                                            style: const TextStyle(fontSize: 12),
+                                            style:
+                                                const TextStyle(fontSize: 12),
                                           ),
                                         ),
-
                                       ],
                                     ),
                                   ],

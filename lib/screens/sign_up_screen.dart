@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/screens/home_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:petlv/screens/services/auth_services.dart';
+import 'package:petlv/screens/services/buttocks_bar.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class SignUpScreen extends StatefulWidget {
 class SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   ValueNotifier userCredential = ValueNotifier('');
 
@@ -21,6 +23,7 @@ class SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Sign Up'),
       ),
       body: Padding(
@@ -68,7 +71,81 @@ class SignUpScreenState extends State<SignUpScreen> {
                 ),
                 obscureText: true,
               ),
-              const SizedBox(height: 24.0),
+              const SizedBox(height: 16.0),
+              Align(
+                  alignment: Alignment.centerLeft,
+                  child: const Text(
+                    'Confirm Password',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  )),
+              const SizedBox(height: 5.0),
+              TextField(
+                controller: _confirmPasswordController,
+                decoration: const InputDecoration(
+                  hintText: 'Confirm Password',
+                  border: OutlineInputBorder(),
+                ),
+                obscureText: true,
+              ),
+              const SizedBox(height: 32.0),
+              SizedBox(
+                height: 60,
+                width: 350,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      backgroundColor: Color(0xffC67C4E),
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                      )),
+                  onPressed: () async {
+                    await AuthServices.signUpWithEmail(
+                        _emailController,
+                        _passwordController,
+                        _confirmPasswordController,
+                        context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(AuthServices.getErrorMessage())),
+                    );
+                  },
+                  child: const Text('Register',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.orange,
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignInScreen()),
+                  );
+                },
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Already Have Account? | ',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: 'Login',
+                        style: TextStyle(
+                            color: Colors.brown, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
               Row(
                 children: [
                   Expanded(
@@ -90,7 +167,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 32.0),
+              const SizedBox(height: 16.0),
               ValueListenableBuilder(
                 valueListenable: userCredential,
                 builder: (context, value, child) {
@@ -106,12 +183,12 @@ class SignUpScreenState extends State<SignUpScreen> {
                             )),
                         onPressed: () async {
                           userCredential.value =
-                              await AuthServices.signInWithGoogle();
+                              await AuthServices.signInWithGoogle(context);
                           if (userCredential.value != null)
                             print(userCredential.value.user!.email);
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
-                                builder: (context) => const HomeScreen()),
+                                builder: (context) => BottomNavBarScreen()),
                           );
                         },
                         child: Row(
@@ -130,64 +207,7 @@ class SignUpScreenState extends State<SignUpScreen> {
                   );
                 },
               ),
-              const SizedBox(height: 24.0),
-              SizedBox(
-                height: 60,
-                width: 350,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      elevation: 5,
-                      backgroundColor: Color(0xffC67C4E),
-                      textStyle: const TextStyle(
-                        fontSize: 16,
-                      )),
-                  onPressed: () async {
-                    await AuthServices.signInWithEmail(
-                        _emailController, _passwordController, context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(AuthServices.getErrorMessage())),
-                    );
-                  },
-                  child: const Text('Register',
-                      style: TextStyle(color: Colors.white)),
-                ),
-              ),
-              SizedBox(
-                height: 60,
-                width: 350,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.orange,
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SignInScreen()),
-                    );
-                  },
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Already Have Account? | ',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: 'Login',
-                          style: TextStyle(
-                              color: Colors.brown, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              const SizedBox(height: 16.0),
             ],
           ),
         ),

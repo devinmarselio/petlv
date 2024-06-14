@@ -22,9 +22,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.background,
         title: Image.asset(
           color: Theme.of(context).colorScheme.secondary,
@@ -176,7 +176,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           alignment: Alignment.centerLeft,
                                           child: Text(
                                             '${thisItem['name']}',
-                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                         Text('${thisItem['age']} month old')
@@ -185,18 +186,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Expanded(child: SizedBox()),
                                     IconButton(
                                       icon: Icon(
-                                        thisItem['isFavorite'] != null && thisItem['isFavorite'] ? Icons.bookmark : Icons.bookmark_outline,
-                                        color: Theme.of(context).colorScheme.secondary,
+                                        thisItem['isFavorite'] != null &&
+                                                thisItem['isFavorite']
+                                            ? Icons.bookmark
+                                            : Icons.bookmark_outline,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
                                       ),
                                       onPressed: () async {
                                         setState(() {
-                                          thisItem['isFavorite'] = thisItem['isFavorite'] != null && thisItem['isFavorite'] ? false : true;
+                                          thisItem['isFavorite'] =
+                                              thisItem['isFavorite'] != null &&
+                                                      thisItem['isFavorite']
+                                                  ? false
+                                                  : true;
                                         });
                                         // Simpan status favorit ke Firestore
                                         await FirebaseFirestore.instance
                                             .collection('posts')
                                             .doc(thisItem['id'])
-                                            .update({'isFavorite': thisItem['isFavorite']});
+                                            .update({
+                                          'isFavorite': thisItem['isFavorite']
+                                        });
                                       },
                                     )
                                   ],

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -13,9 +12,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text("Notification Screen"),
       ),
     );
   }
 }
-
