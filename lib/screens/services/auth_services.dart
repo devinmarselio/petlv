@@ -3,11 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:petlv/screens/home_screen.dart';
+import 'package:petlv/screens/services/buttocks_bar.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
 class AuthServices {
   static String _errorMessage = '';
-  static Future<dynamic> signInWithGoogle() async {
+  static Future<dynamic> signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn(
         scopes: [
@@ -24,6 +25,9 @@ class AuthServices {
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => BottomNavBarScreen()),
       );
 
       return await FirebaseAuth.instance.signInWithCredential(credential);
@@ -47,7 +51,7 @@ class AuthServices {
         password: passwordController.text,
       );
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => BottomNavBarScreen()),
       );
       _errorMessage = 'Sign In Successful';
     } on FirebaseAuthException catch (error) {
@@ -58,6 +62,52 @@ class AuthServices {
       } else if (error.code == 'wrong-password') {
         // Jika password salah, tampilkan pesan kesalahan
         _errorMessage = 'Wrong password. Please try again.';
+      } else {
+        // Jika terjadi kesalahan lain, tampilkan pesan kesalahan umum
+        _errorMessage = error.message ?? 'An error occurred';
+      }
+    } catch (error) {
+      // Tangani kesalahan lain yang tidak terkait dengan otentikasi
+      _errorMessage = '$error';
+    }
+  }
+
+  static Future<void> signUpWithEmail(
+      TextEditingController emailController,
+      TextEditingController passwordController,
+      TextEditingController confirmPasswordController,
+      BuildContext context) async {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      _errorMessage = 'Please fill in all fields.';
+      return;
+    } else if (password != confirmPassword) {
+      _errorMessage = 'Password doesn\'t match';
+      return;
+    }
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => BottomNavBarScreen()),
+      );
+      _errorMessage = 'Sign Up Successful';
+    } on FirebaseAuthException catch (error) {
+      print('Error code: ${error.code}');
+      if (error.code == 'weak-password') {
+        // Jika password lemah, tampilkan pesan kesalahan
+        _errorMessage = 'The password provided is too weak.';
+      } else if (error.code == 'email-already-in-use') {
+        // Jika email pernah terdaftar, tampilkan pesan kesalahan
+        _errorMessage = 'The account already exists for that email.';
+      } else if (error.code == 'invalid-email') {
+        // Jika email tidak valid, tampilkan pesan kesalahan
+        _errorMessage = 'The email address is not valid.';
       } else {
         // Jika terjadi kesalahan lain, tampilkan pesan kesalahan umum
         _errorMessage = error.message ?? 'An error occurred';

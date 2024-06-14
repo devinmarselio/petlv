@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:petlv/screens/home_screen.dart';
+import 'package:petlv/screens/profile_settings_screen.dart';
 import 'package:petlv/screens/services/auth_services.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 import 'package:petlv/themes/theme.dart';
@@ -98,9 +99,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       height: MediaQuery.of(context).size.width / 9,
                       child: const Center(
                         child: Text(
-                                                  'userName',
-                                                  style: TextStyle(fontSize: 18),
-                                                ),
+                          'userName',
+                          style: TextStyle(fontSize: 18),
+                        ),
                       ),
                     ),
                     const SizedBox(
@@ -124,7 +125,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           style: ButtonStyle(
                               backgroundColor: MaterialStatePropertyAll(
                                   Theme.of(context).colorScheme.primary)),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ProfileSettingsScreen()),
+                            );
+                          },
                           child: Text(
                             'User Settings',
                             style: TextStyle(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:petlv/screens/home_screen.dart';
+import 'package:petlv/screens/reset_password_screen.dart';
 import 'package:petlv/screens/services/auth_services.dart';
 import 'package:petlv/screens/sign_up_screen.dart';
 
@@ -23,6 +24,7 @@ class SignInScreenState extends State<SignInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text('Sign In'),
       ),
       body: Padding(
@@ -69,7 +71,77 @@ class SignInScreenState extends State<SignInScreen> {
                     border: OutlineInputBorder(),
                   ),
                   obscureText: true),
-              const SizedBox(height: 32.0),
+              const SizedBox(height: 16.0),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ResetPasswordScreen()),
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Forgot your password?',
+                    style: TextStyle(decoration: TextDecoration.underline),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              SizedBox(
+                height: 60,
+                width: 350,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      backgroundColor: Color(0xffC67C4E),
+                      textStyle: const TextStyle(
+                        fontSize: 18,
+                      )),
+                  onPressed: () async {
+                    await AuthServices.signInWithEmail(
+                        _emailController, _passwordController, context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(AuthServices.getErrorMessage())),
+                    );
+                  },
+                  child: const Text('Login',
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ),
+              const SizedBox(height: 12.0),
+              TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.orange,
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpScreen()),
+                  );
+                },
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: 'Not a member? | ',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      TextSpan(
+                        text: 'Create an account',
+                        style: TextStyle(
+                            color: Colors.brown, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16.0),
               Row(
                 children: [
                   Expanded(
@@ -91,7 +163,7 @@ class SignInScreenState extends State<SignInScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 32.0),
+              const SizedBox(height: 16.0),
               ValueListenableBuilder(
                 valueListenable: userCredential,
                 builder: (context, value, child) {
@@ -107,7 +179,7 @@ class SignInScreenState extends State<SignInScreen> {
                             )),
                         onPressed: () async {
                           userCredential.value =
-                              await AuthServices.signInWithGoogle();
+                              await AuthServices.signInWithGoogle(context);
                           if (userCredential.value != null)
                             print(userCredential.value.user!.email);
                           Navigator.of(context).pushReplacement(
@@ -132,64 +204,6 @@ class SignInScreenState extends State<SignInScreen> {
                 },
               ),
               const SizedBox(height: 16.0),
-              SizedBox(
-                height: 60,
-                width: 350,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      elevation: 5,
-                      backgroundColor: Color(0xffC67C4E),
-                      textStyle: const TextStyle(
-                        fontSize: 18,
-                      )),
-                  onPressed: () async {
-                    await AuthServices.signInWithEmail(
-                        _emailController, _passwordController, context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(AuthServices.getErrorMessage())),
-                    );
-                  },
-                  child: const Text('Login',
-                      style: TextStyle(color: Colors.white)),
-                ),
-              ),
-              const SizedBox(height: 15.0),
-              SizedBox(
-                height: 60,
-                width: 350,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.orange,
-                    textStyle: const TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SignUpScreen()),
-                    );
-                  },
-                  child: RichText(
-                    text: TextSpan(
-                      children: [
-                        TextSpan(
-                          text: 'Not a member? | ',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        TextSpan(
-                          text: 'Create an account',
-                          style: TextStyle(
-                              color: Colors.brown, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

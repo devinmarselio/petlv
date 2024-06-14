@@ -13,8 +13,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text("Favorite screen"),
-
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -47,7 +47,9 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   subtitle: Text(post['type']),
                   trailing: IconButton(
                     icon: Icon(
-                      post['isFavorite']? Icons.bookmark : Icons.bookmark_outline,
+                      post['isFavorite']
+                          ? Icons.bookmark
+                          : Icons.bookmark_outline,
                       color: Theme.of(context).colorScheme.secondary,
                     ),
                     onPressed: () async {
@@ -55,7 +57,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       await FirebaseFirestore.instance
                           .collection('posts')
                           .doc(post.id)
-                          .update({'isFavorite':!post['isFavorite']});
+                          .update({'isFavorite': !post['isFavorite']});
                     },
                   ),
                 ),
