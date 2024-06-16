@@ -44,14 +44,14 @@ class SignUpScreenState extends State<SignUpScreen> {
               Align(
                   alignment: Alignment.centerLeft,
                   child: const Text(
-                    'Username',
+                    'Email address',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )),
               const SizedBox(height: 5.0),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(
-                  hintText: 'Username',
+                  hintText: 'Email address',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -186,10 +186,6 @@ class SignUpScreenState extends State<SignUpScreen> {
                               await AuthServices.signInWithGoogle(context);
                           if (userCredential.value != null)
                             print(userCredential.value.user!.email);
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (context) => BottomNavBarScreen()),
-                          );
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

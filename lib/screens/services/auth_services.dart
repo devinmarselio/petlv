@@ -7,7 +7,7 @@ import 'package:petlv/screens/services/buttocks_bar.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
 class AuthServices {
-  static String _errorMessage = '';
+  static String _message = '';
   static Future<dynamic> signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn(
@@ -42,7 +42,7 @@ class AuthServices {
     final email = emailController.text.trim();
     final password = passwordController.text;
     if (email.isEmpty || !isValidEmail(email)) {
-      _errorMessage = 'Please enter a valid email';
+      _message = 'Please enter a valid email';
       return;
     }
     try {
@@ -53,22 +53,22 @@ class AuthServices {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => BottomNavBarScreen()),
       );
-      _errorMessage = 'Sign In Successful';
+      _message = 'Sign In Successful';
     } on FirebaseAuthException catch (error) {
       print('Error code: ${error.code}');
       if (error.code == 'user-not-found') {
         // Jika email tidak terdaftar, tampilkan pesan kesalahan
-        _errorMessage = 'No user found with that email';
+        _message = 'No user found with that email';
       } else if (error.code == 'wrong-password') {
         // Jika password salah, tampilkan pesan kesalahan
-        _errorMessage = 'Wrong password. Please try again.';
+        _message = 'Wrong password. Please try again.';
       } else {
         // Jika terjadi kesalahan lain, tampilkan pesan kesalahan umum
-        _errorMessage = error.message ?? 'An error occurred';
+        _message = error.message ?? 'An error occurred';
       }
     } catch (error) {
       // Tangani kesalahan lain yang tidak terkait dengan otentikasi
-      _errorMessage = '$error';
+      _message = '$error';
     }
   }
 
@@ -82,10 +82,10 @@ class AuthServices {
     final confirmPassword = confirmPasswordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      _errorMessage = 'Please fill in all fields.';
+      _message = 'Please fill in all fields.';
       return;
     } else if (password != confirmPassword) {
-      _errorMessage = 'Password doesn\'t match';
+      _message = 'Password doesn\'t match';
       return;
     }
     try {
@@ -96,25 +96,40 @@ class AuthServices {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => BottomNavBarScreen()),
       );
-      _errorMessage = 'Sign Up Successful';
+      _message = 'Sign Up Successful';
     } on FirebaseAuthException catch (error) {
       print('Error code: ${error.code}');
       if (error.code == 'weak-password') {
         // Jika password lemah, tampilkan pesan kesalahan
-        _errorMessage = 'The password provided is too weak.';
+        _message = 'The password provided is too weak.';
       } else if (error.code == 'email-already-in-use') {
         // Jika email pernah terdaftar, tampilkan pesan kesalahan
-        _errorMessage = 'The account already exists for that email.';
+        _message = 'The account already exists for that email.';
       } else if (error.code == 'invalid-email') {
         // Jika email tidak valid, tampilkan pesan kesalahan
-        _errorMessage = 'The email address is not valid.';
+        _message = 'The email address is not valid.';
       } else {
         // Jika terjadi kesalahan lain, tampilkan pesan kesalahan umum
-        _errorMessage = error.message ?? 'An error occurred';
+        _message = error.message ?? 'An error occurred';
       }
     } catch (error) {
       // Tangani kesalahan lain yang tidak terkait dengan otentikasi
-      _errorMessage = '$error';
+      _message = '$error';
+    }
+  }
+
+  static Future<dynamic> resetPassword({required String email}) async {
+    try {
+      await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      _message = 'Email for Reset Password has been sent';
+    } on FirebaseAuthException catch (error) {
+      if (error.code == 'user-not-found') {
+        // Handle the case where the user is not found
+        _message = 'User not found';
+      }
+    } catch (error) {
+      _message = '$error';
     }
   }
 
@@ -138,6 +153,6 @@ class AuthServices {
   }
 
   static String getErrorMessage() {
-    return _errorMessage;
+    return _message;
   }
 }

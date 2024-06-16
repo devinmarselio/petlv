@@ -26,9 +26,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   GlobalKey<FormState> key = GlobalKey();
   final User? user = FirebaseAuth.instance.currentUser;
   final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
   final _numberController = TextEditingController();
-  final _passwordController = TextEditingController();
   ThemeProvider themeProvider = ThemeProvider();
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
@@ -146,7 +144,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       SizedBox(
                         height: 60,
                         child: TextField(
-                            controller: _usernameController,
+                            controller: _numberController,
                             decoration: const InputDecoration(
                               hintText: 'Phone Number',
                               border: OutlineInputBorder(),
