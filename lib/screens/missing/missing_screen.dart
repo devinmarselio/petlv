@@ -18,8 +18,6 @@ class MissingScreen extends StatefulWidget {
 }
 
 class _MissingScreenState extends State<MissingScreen> {
-  SignInScreenState signInScreenState = SignInScreenState();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,22 +31,6 @@ class _MissingScreenState extends State<MissingScreen> {
           width: 100,
           height: 100,
         ),
-        actions: [
-          IconButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => const ProfileScreen()), // ProfilScreen
-            ),
-            icon: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(
-                      width: 2,
-                      color: Theme.of(context).colorScheme.secondary)),
-              child: const Icon(Icons.person_2_outlined),
-            ),
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -136,15 +118,16 @@ class _MissingScreenState extends State<MissingScreen> {
                         child: GestureDetector(
                           onTap: () async => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => DetailMissing(
-                                  // name: thisItem['name'],
-                                  // age: thisItem['age'],
-                                  // size: thisItem['size'],
-                                  // description: thisItem['description'],
-                                  // image_url: thisItem['image_url'],
-                                  // timestamp: thisItem['timestamp'],
-                                  ),
-                            ), // ProfilScreen
+                              builder: (context) => DetailPostMissingScreen(
+                                name: thisItem['name'],
+                                email: thisItem['email'],
+                                lastseen: thisItem['lastseen'],
+                                status: thisItem['status'],
+                                description: thisItem['description'],
+                                image_url: thisItem['image_url'],
+                                timestamp: thisItem['timestamp'],
+                              ),
+                            ),
                           ),
                           child: Card(
                             child: Column(
@@ -243,14 +226,4 @@ class _MissingScreenState extends State<MissingScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
-}
-
-Widget timestaps(Map thisItem) {
-  Timestamp timestamp = thisItem['timestamp'];
-  DateTime dateTime = timestamp.toDate();
-
-  return Text(
-    '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}',
-    style: const TextStyle(fontSize: 12),
-  );
 }
