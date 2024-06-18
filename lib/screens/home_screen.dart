@@ -82,12 +82,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: 34),
                     ),
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                        labelText: 'Search...',
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.search)),
+                  SizedBox(
+                    height: 50,
+                    child: TextField(
+                      decoration: InputDecoration(
+                          labelText: 'Search...',
+                          border: OutlineInputBorder(),
+                          suffixIcon: Icon(Icons.search)),
+                    ),
                   ),
+                  SizedBox(
+                    height: 10,
+                  )
                 ],
               ),
             ),
@@ -183,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Text('${thisItem['age']} month old')
                                       ],
                                     ),
-                                    Expanded(child: SizedBox()),
+                                    const Expanded(child: SizedBox()),
                                     IconButton(
                                       icon: Icon(
                                         thisItem['isFavorite'] != null &&
@@ -227,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+          SizedBox(height: 80)
         ],
       ),
       floatingActionButton: Container(

@@ -76,7 +76,7 @@ class _MissingScreenState extends State<MissingScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Missing ',
+                      'Missing Animal',
                       style: TextStyle(
                           color: Color(0xffC67C4E),
                           fontWeight: FontWeight.bold,
@@ -198,6 +198,7 @@ class _MissingScreenState extends State<MissingScreen> {
               },
             ),
           ),
+          SizedBox(height: 80)
         ],
       ),
       floatingActionButton: Container(
