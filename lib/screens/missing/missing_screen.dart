@@ -31,6 +31,22 @@ class _MissingScreenState extends State<MissingScreen> {
           width: 100,
           height: 100,
         ),
+        actions: [
+          IconButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute(
+                  builder: (context) => const ProfileScreen()), // ProfilScreen
+            ),
+            icon: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(
+                      width: 2,
+                      color: Theme.of(context).colorScheme.secondary)),
+              child: const Icon(Icons.person_2_outlined),
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -97,7 +113,9 @@ class _MissingScreenState extends State<MissingScreen> {
                             'image_url': e['image_url'],
                             'email': e['email'],
                             'timestamp': e['timestamp'],
-                            'status': e['status']
+                            'status': e['status'],
+                            'username': e['username'],
+                            'phoneNumber': e['phoneNumber'],
                           })
                       .toList();
                   return GridView.builder(
@@ -126,6 +144,8 @@ class _MissingScreenState extends State<MissingScreen> {
                                 description: thisItem['description'],
                                 image_url: thisItem['image_url'],
                                 timestamp: thisItem['timestamp'],
+                                username: thisItem['username'],
+                                phoneNumber: thisItem['phoneNumber'],
                               ),
                             ),
                           ),

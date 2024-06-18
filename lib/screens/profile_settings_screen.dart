@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -27,6 +28,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   final User? user = FirebaseAuth.instance.currentUser;
   final _usernameController = TextEditingController();
   final _numberController = TextEditingController();
+
   ThemeProvider themeProvider = ThemeProvider();
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
@@ -102,7 +104,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                   ],
                 ),
@@ -112,70 +114,61 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
-              child: SingleChildScrollView(
-                child: Container(
-                  height: 300,
-                  child: Column(
-                    children: [
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'Username',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )),
-                      const SizedBox(height: 5.0),
-                      SizedBox(
-                        height: 60,
-                        child: TextField(
-                            controller: _usernameController,
-                            decoration: const InputDecoration(
-                              hintText: 'Username',
-                              border: OutlineInputBorder(),
-                            )),
-                      ),
-                      const SizedBox(height: 10.0),
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'Phone Number',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )),
-                      const SizedBox(height: 5.0),
-                      SizedBox(
-                        height: 60,
-                        child: TextField(
-                            controller: _numberController,
-                            decoration: const InputDecoration(
-                              hintText: 'Phone Number',
-                              border: OutlineInputBorder(),
-                            )),
-                      ),
-                      Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: SizedBox(
-                          width: 350,
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                  Theme.of(context).colorScheme.primary),
-                            ),
-                            onPressed: () async {
-                              await FirebaseAuth.instance
-                                  .sendPasswordResetEmail(
-                                      email: user?.email ?? '');
-                            },
-                            child: Text(
-                              'Confirm',
-                              style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary),
-                            ),
+              child: Container(
+                height: 300,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          'Username',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                    const SizedBox(height: 5.0),
+                    TextField(
+                        controller: _usernameController,
+                        decoration: const InputDecoration(
+                          hintText: 'Username',
+                          border: OutlineInputBorder(),
+                        )),
+                    const SizedBox(height: 10.0),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          'Phone Number',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                    const SizedBox(height: 5.0),
+                    TextField(
+                        controller: _numberController,
+                        decoration: const InputDecoration(
+                          hintText: 'Phone Number',
+                          border: OutlineInputBorder(),
+                        )),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                                Theme.of(context).colorScheme.primary),
+                          ),
+                          onPressed: () async {
+                            await _updateProfile();
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Confirm',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -183,6 +176,64 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _updateProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      if (_image != null) {
+        final ref = FirebaseStorage.instance.ref();
+        final storageRef = ref.child('users/${user.uid}/profile_picture');
+        await storageRef.putFile(File(_image!.path));
+        final url = await storageRef.getDownloadURL();
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .update({'profilePicture': url});
+      }
+
+      if (_usernameController.text.isNotEmpty) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        if (userDoc.exists) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({'username': _usernameController.text});
+        } else {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
+            'username': _usernameController.text,
+            'phoneNumber': _numberController.text ?? '',
+          }, SetOptions(merge: true));
+        }
+      }
+
+      if (_numberController.text.isNotEmpty) {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        if (userDoc.exists) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({'phoneNumber': _numberController.text});
+        } else {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
+            'phoneNumber': _numberController.text,
+            'username': _usernameController.text ?? '',
+          }, SetOptions(merge: true));
+        }
+      }
+    }
   }
 
   Future<void> _showImageSourceDialog() async {

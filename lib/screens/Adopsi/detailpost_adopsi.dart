@@ -14,18 +14,21 @@ class detailPostAdoptScreen extends StatefulWidget {
   final String description;
   final String image_url;
   final Timestamp timestamp;
+  final String username;
+  final String phoneNumber;
 
-  const detailPostAdoptScreen({
-    super.key,
-    required this.name,
-    required this.email,
-    required this.type,
-    required this.age,
-    required this.size,
-    required this.description,
-    required this.image_url,
-    required this.timestamp,
-  });
+  const detailPostAdoptScreen(
+      {super.key,
+      required this.name,
+      required this.email,
+      required this.type,
+      required this.age,
+      required this.size,
+      required this.description,
+      required this.image_url,
+      required this.timestamp,
+      required this.username,
+      required this.phoneNumber});
 
   @override
   State<detailPostAdoptScreen> createState() => _detailPostAdoptScreenState();
@@ -64,7 +67,8 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
             children: [
               // Foto Peliharaan
               Container(
-                width: double.infinity, // tambahkan width untuk membuat gambar lebih kecil
+                width: double
+                    .infinity, // tambahkan width untuk membuat gambar lebih kecil
                 height: 280,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black),
@@ -80,9 +84,12 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
               ),
               const SizedBox(height: 20.0),
               // Nama Peliharaan
-              Text(
-                widget.name,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: Text(
+                  widget.name,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(height: 40.0),
               // Deskripsi Peliharaan
@@ -110,15 +117,21 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 5,
+                            flex: 8,
                             child: Container(
                               child: Text("Type"),
                             ),
                           ),
                           Expanded(
-                            flex: 5,
+                            flex: 1,
                             child: Container(
-                              child: Text(": ${widget.type}"),
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(widget.type),
                             ),
                           ),
                         ],
@@ -131,15 +144,21 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 5,
+                            flex: 8,
                             child: Container(
                               child: Text("Age"),
                             ),
                           ),
                           Expanded(
-                            flex: 5,
+                            flex: 1,
                             child: Container(
-                              child: Text(": ${widget.age} Bulan"),
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(widget.age),
                             ),
                           ),
                         ],
@@ -152,15 +171,21 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 5,
+                            flex: 8,
                             child: Container(
                               child: Text("Size"),
                             ),
                           ),
                           Expanded(
-                            flex: 5,
+                            flex: 1,
                             child: Container(
-                              child: Text(": ${widget.size} kg"),
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(widget.size),
                             ),
                           ),
                         ],
@@ -173,16 +198,118 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 5,
+                            flex: 8,
                             child: Container(
                               child: Text("Published Date"),
                             ),
                           ),
                           Expanded(
-                            flex: 5,
+                            flex: 1,
                             child: Container(
-                              child: Text(
-                                  ": ${DateFormat('MM/dd/yyyy, hh:mm a').format(widget.timestamp.toDate())}"),
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(DateFormat('MM/dd/yyyy, hh:mm a')
+                                  .format(widget.timestamp.toDate())),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10.0),
+                      Divider(
+                        color: Colors.black,
+                        height: 2.0,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              ExpandablePanel(
+                header: const Text(
+                  "Owner Contact",
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                ),
+                collapsed: const Text(""),
+                expanded: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 8,
+                            child: Container(
+                              child: Text("Name"),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(widget.username),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10.0),
+                      Divider(
+                        color: Colors.black,
+                        height: 2.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 8,
+                            child: Container(
+                              child: Text("Number"),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(widget.phoneNumber),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10.0),
+                      Divider(
+                        color: Colors.black,
+                        height: 2.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 8,
+                            child: Container(
+                              child: Text("Email"),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(widget.email),
                             ),
                           ),
                         ],
@@ -299,7 +426,9 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
 
       setState(() {
         _comments[index].replies.add(Reply(text: text, username: username));
-        _comments = [..._comments]; // Update the _comments list with the new reply
+        _comments = [
+          ..._comments
+        ]; // Update the _comments list with the new reply
         _replyController.clear();
       });
     } catch (e) {
@@ -333,7 +462,8 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
               onPressed: () {
                 if (_replyController.text.isNotEmpty) {
                   Navigator.of(context).pop(); // Close the dialog
-                  _addReply(index); // Call the _addReply function with the index parameter
+                  _addReply(
+                      index); // Call the _addReply function with the index parameter
                 } else {
                   // Show an error message or alert the user to enter a reply
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -393,11 +523,16 @@ class Comment {
   String text;
   List<Reply> replies = [];
 
-  Comment({this.id = '', required this.username, required this.text, this.replies = const []});
+  Comment(
+      {this.id = '',
+      required this.username,
+      required this.text,
+      this.replies = const []});
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
-      id: map['id'] ?? '', // provide a default value if 'id' is not present in the map
+      id: map['id'] ??
+          '', // provide a default value if 'id' is not present in the map
       username: map['username'],
       text: map['text'],
     );

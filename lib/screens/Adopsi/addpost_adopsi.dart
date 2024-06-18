@@ -21,18 +21,42 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   XFile? _image;
   String? _selectedType;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   final List<String> _typeItems = ['Dog', 'Cat'];
+  String _username = '';
+  String _phoneNumber = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+      if (snapshot.exists) {
+        setState(() {
+          _username = snapshot.data()!['username'];
+          _phoneNumber = snapshot.data()!['phoneNumber'];
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading:
-          IconButton(
-              onPressed: () {Navigator.of(context).pop();} ,
-              icon: Icon(Icons.arrow_back))
-        ,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Icon(Icons.arrow_back)),
         title: Text('Adoption Post'),
       ),
       body: SingleChildScrollView(
@@ -161,12 +185,14 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                           'image_url': downloadUrl,
                           'email': userEmail,
                           'timestamp': Timestamp.now(),
+                          'username': _username,
+                          'phoneNumber': _phoneNumber,
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content: Text('Image uploaded successfully')),
                         );
-                        Navigator.pushReplacement(
+                        await Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(builder: (context) => HomeScreen()),
                         );

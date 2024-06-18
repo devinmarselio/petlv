@@ -128,6 +128,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             'image_url': e['image_url'],
                             'email': e['email'],
                             'timestamp': e['timestamp'],
+                            'username': e['username'],
+                            'phoneNumber': e['phoneNumber'],
                           })
                       .toList();
                   return GridView.builder(
@@ -157,8 +159,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 description: thisItem['description'],
                                 image_url: thisItem['image_url'],
                                 timestamp: thisItem['timestamp'],
+                                username: thisItem['username'],
+                                phoneNumber: thisItem['phoneNumber'],
                               ),
-                            ), // ProfilScreen
+                            ),
                           ),
                           child: Card(
                             child: Column(

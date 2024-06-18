@@ -13,17 +13,20 @@ class DetailPostMissingScreen extends StatefulWidget {
   final String description;
   final String image_url;
   final Timestamp timestamp;
+  final String username;
+  final String phoneNumber;
 
-  const DetailPostMissingScreen({
-    super.key,
-    required this.name,
-    required this.email,
-    required this.lastseen,
-    required this.status,
-    required this.description,
-    required this.image_url,
-    required this.timestamp,
-  });
+  const DetailPostMissingScreen(
+      {super.key,
+      required this.name,
+      required this.email,
+      required this.lastseen,
+      required this.status,
+      required this.description,
+      required this.image_url,
+      required this.timestamp,
+      required this.username,
+      required this.phoneNumber});
 
   @override
   State<DetailPostMissingScreen> createState() =>
@@ -80,11 +83,30 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
               ),
               const SizedBox(height: 20.0),
               // Nama Peliharaan
-              Text(
-                widget.name,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              Padding(
+                padding: const EdgeInsets.only(left: 8, right: 8),
+                child: Row(
+                  children: [
+                    Text(
+                      widget.name,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    Spacer(),
+                    Text(
+                      widget.status,
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 40.0),
+              const SizedBox(height: 20.0),
+              const Divider(
+                color: Colors.black,
+                height: 2.0,
+              ),
+              const SizedBox(height: 20.0),
               // Deskripsi Peliharaan
               Text(
                 widget.description,
@@ -96,10 +118,39 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                 height: 2.0,
               ),
               const SizedBox(height: 20.0),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 8,
+                    child: Container(
+                      child: Text("Published Date"),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Container(
+                      child: Text(": "),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 10,
+                    child: Container(
+                      child: Text(DateFormat('MM/dd/yyyy, hh:mm a')
+                          .format(widget.timestamp.toDate())),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20.0),
+              const Divider(
+                color: Colors.black,
+                height: 2.0,
+              ),
+              const SizedBox(height: 20.0),
               // Informasi Peliharaan
               ExpandablePanel(
                 header: const Text(
-                  "Information",
+                  "Owner Contact",
                   style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
                 collapsed: const Text(""),
@@ -110,36 +161,21 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 5,
+                            flex: 8,
                             child: Container(
-                              child: Text("lastseen"),
+                              child: Text("Name"),
                             ),
                           ),
                           Expanded(
-                            flex: 5,
+                            flex: 1,
                             child: Container(
-                              child: Text(": ${widget.lastseen}"),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 5,
-                            child: Container(
-                              child: Text("Status"),
+                              child: Text(": "),
                             ),
                           ),
                           Expanded(
-                            flex: 5,
+                            flex: 10,
                             child: Container(
-                              child: Text(": ${widget.status} "),
+                              child: Text(widget.username),
                             ),
                           ),
                         ],
@@ -152,16 +188,48 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 5,
+                            flex: 8,
                             child: Container(
-                              child: Text("Published Date"),
+                              child: Text("Number"),
                             ),
                           ),
                           Expanded(
-                            flex: 5,
+                            flex: 1,
                             child: Container(
-                              child: Text(
-                                  ": ${DateFormat('MM/dd/yyyy, hh:mm a').format(widget.timestamp.toDate())}"),
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(widget.phoneNumber),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10.0),
+                      Divider(
+                        color: Colors.black,
+                        height: 2.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 8,
+                            child: Container(
+                              child: Text("Email"),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: Container(
+                              child: Text(widget.email),
                             ),
                           ),
                         ],
@@ -178,9 +246,19 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
               const SizedBox(height: 20.0),
               // Komentar
               ExpandablePanel(
-                header: const Text(
-                  "Comments",
-                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                header: Row(
+                  children: [
+                    Text(
+                      "Comments",
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      widget.name,
+                      style: TextStyle(
+                          fontSize: 20.0, fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
                 collapsed: const Text(""),
                 expanded: Padding(
