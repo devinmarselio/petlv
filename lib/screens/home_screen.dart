@@ -130,6 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             'timestamp': e['timestamp'],
                             'username': e['username'],
                             'phoneNumber': e['phoneNumber'],
+                            'isFavorite': e['isFavorite'] ?? false,
                           })
                       .toList();
                   return GridView.builder(
@@ -196,8 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     const Expanded(child: SizedBox()),
                                     IconButton(
                                       icon: Icon(
-                                        thisItem['isFavorite'] != null &&
-                                                thisItem['isFavorite']
+                                        thisItem['isFavorite']
                                             ? Icons.bookmark
                                             : Icons.bookmark_outline,
                                         color: Theme.of(context)
@@ -207,10 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onPressed: () async {
                                         setState(() {
                                           thisItem['isFavorite'] =
-                                              thisItem['isFavorite'] != null &&
-                                                      thisItem['isFavorite']
-                                                  ? false
-                                                  : true;
+                                              !thisItem['isFavorite'];
                                         });
                                         // Simpan status favorit ke Firestore
                                         await FirebaseFirestore.instance

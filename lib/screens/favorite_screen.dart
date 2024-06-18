@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:petlv/screens/Adopsi/detailpost_adopsi.dart';
 import 'package:petlv/screens/profile_screen.dart';
 
 class FavoriteScreen extends StatefulWidget {
@@ -95,48 +96,90 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   .where('isFavorite', isEqualTo: true)
                   .snapshots(),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                if (snapshot.hasData) {
+                  QuerySnapshot querySnapshot = snapshot.data!;
+                  List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+                  List<Map<String, dynamic>> items = documents
+                      .map((e) => {
+                            'id': e.id,
+                            'name': e['name'],
+                            'type': e['type'],
+                            'age': e['age'],
+                            'size': e['size'],
+                            'description': e['description'],
+                            'image_url': e['image_url'],
+                            'email': e['email'],
+                            'timestamp': e['timestamp'],
+                            'username': e['username'],
+                            'phoneNumber': e['phoneNumber'],
+                            'isFavorite': e['isFavorite'] ?? false,
+                          })
+                      .toList();
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(8.0),
+                    itemCount: snapshot.data!.docs.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.6,
+                      mainAxisSpacing: 8.0,
+                      crossAxisSpacing: 8.0,
+                    ),
+                    itemBuilder: (context, index) {
+                      Map thisItem = items[index];
+                      final post = snapshot.data!.docs[index];
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: () async => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => detailPostAdoptScreen(
+                                name: thisItem['name'],
+                                email: thisItem['email'],
+                                type: thisItem['type'],
+                                age: thisItem['age'],
+                                size: thisItem['size'],
+                                description: thisItem['description'],
+                                image_url: thisItem['image_url'],
+                                timestamp: thisItem['timestamp'],
+                                username: thisItem['username'],
+                                phoneNumber: thisItem['phoneNumber'],
+                              ),
+                            ),
+                          ),
+                          child: GridTile(
+                            child: Image.network(post['image_url'],
+                                fit: BoxFit.cover),
+                            footer: GridTileBar(
+                              backgroundColor: Colors.black54,
+                              title: Text(post['name']),
+                              subtitle: Text(post['type']),
+                              trailing: IconButton(
+                                icon: Icon(
+                                  post['isFavorite']
+                                      ? Icons.bookmark
+                                      : Icons.bookmark_outline,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                                onPressed: () async {
+                                  // Update status favorit di Firestore
+                                  await FirebaseFirestore.instance
+                                      .collection('posts')
+                                      .doc(post.id)
+                                      .update(
+                                          {'isFavorite': !post['isFavorite']});
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 }
-
-                return GridView.builder(
-                  padding: const EdgeInsets.all(8.0),
-                  itemCount: snapshot.data!.docs.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    childAspectRatio: 0.6,
-                    mainAxisSpacing: 8.0,
-                    crossAxisSpacing: 8.0,
-                  ),
-                  itemBuilder: (context, index) {
-                    final post = snapshot.data!.docs[index];
-                    return GridTile(
-                      child:
-                          Image.network(post['image_url'], fit: BoxFit.cover),
-                      footer: GridTileBar(
-                        backgroundColor: Colors.black54,
-                        title: Text(post['name']),
-                        subtitle: Text(post['type']),
-                        trailing: IconButton(
-                          icon: Icon(
-                            post['isFavorite']
-                                ? Icons.bookmark
-                                : Icons.bookmark_outline,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                          onPressed: () async {
-                            // Update status favorit di Firestore
-                            await FirebaseFirestore.instance
-                                .collection('posts')
-                                .doc(post.id)
-                                .update({'isFavorite': !post['isFavorite']});
-                          },
-                        ),
-                      ),
-                    );
-                  },
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
               },
             ),
