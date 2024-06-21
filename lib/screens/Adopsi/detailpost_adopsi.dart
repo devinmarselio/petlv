@@ -17,7 +17,7 @@ class detailPostAdoptScreen extends StatefulWidget {
   final Timestamp timestamp;
   final String username;
   final String phoneNumber;
-  final double location;
+  final GeoPoint location;
 
   const detailPostAdoptScreen({
     super.key,
