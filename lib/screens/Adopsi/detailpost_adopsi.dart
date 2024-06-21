@@ -17,23 +17,22 @@ class detailPostAdoptScreen extends StatefulWidget {
   final Timestamp timestamp;
   final String username;
   final String phoneNumber;
-  final double latitude;
-  final double longitude;
+  final double location;
 
-  const detailPostAdoptScreen(
-      {super.key,
-      required this.name,
-      required this.email,
-      required this.type,
-      required this.age,
-      required this.size,
-      required this.description,
-      required this.image_url,
-      required this.timestamp,
-      required this.username,
-      required this.phoneNumber,
-      required this.latitude,
-      required this.longitude});
+  const detailPostAdoptScreen({
+    super.key,
+    required this.name,
+    required this.email,
+    required this.type,
+    required this.age,
+    required this.size,
+    required this.description,
+    required this.image_url,
+    required this.timestamp,
+    required this.username,
+    required this.phoneNumber,
+    required this.location,
+  });
 
   @override
   State<detailPostAdoptScreen> createState() => _detailPostAdoptScreenState();
@@ -52,8 +51,7 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
   }
 
   void _openGoogleMaps() async {
-    final url =
-        'https://maps.google.com/maps?q=${widget.latitude},${widget.longitude}';
+    final url = 'https://maps.google.com/maps?q=${widget.location}';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } else {

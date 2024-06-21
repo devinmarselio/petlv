@@ -116,6 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Get data
                   QuerySnapshot querySnapshot = snapshot.data!;
                   List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+
                   //Convert the documents to Maps
                   List<Map<String, dynamic>> items = documents
                       .map((e) => {
@@ -130,8 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             'timestamp': e['timestamp'],
                             'username': e['username'],
                             'phoneNumber': e['phoneNumber'],
-                            'latitude': e['latitude'],
-                            'longitude': e['longitude'],
+                            'location': e['location'],
                             'isFavorite': e['isFavorite'] ?? false,
                           })
                       .toList();
@@ -164,8 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 timestamp: thisItem['timestamp'],
                                 username: thisItem['username'],
                                 phoneNumber: thisItem['phoneNumber'],
-                                latitude: thisItem['latitude'],
-                                longitude: thisItem['longitude'],
+                                location: thisItem['location'],
                               ),
                             ),
                           ),
