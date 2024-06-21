@@ -130,6 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             'timestamp': e['timestamp'],
                             'username': e['username'],
                             'phoneNumber': e['phoneNumber'],
+                            'latitude': e['latitude'],
+                            'longitude': e['longitude'],
                             'isFavorite': e['isFavorite'] ?? false,
                           })
                       .toList();
@@ -162,6 +164,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 timestamp: thisItem['timestamp'],
                                 username: thisItem['username'],
                                 phoneNumber: thisItem['phoneNumber'],
+                                latitude: thisItem['latitude'],
+                                longitude: thisItem['longitude'],
                               ),
                             ),
                           ),

@@ -101,23 +101,25 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 20.0),
-              const Divider(
-                color: Colors.black,
-                height: 2.0,
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                child: Divider(
+                  color: Colors.black,
+                  height: 2.0,
+                ),
               ),
-              const SizedBox(height: 20.0),
               // Deskripsi Peliharaan
               Text(
                 widget.description,
                 style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 20.0),
-              const Divider(
-                color: Colors.black,
-                height: 2.0,
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                child: Divider(
+                  color: Colors.black,
+                  height: 2.0,
+                ),
               ),
-              const SizedBox(height: 20.0),
               Row(
                 children: [
                   Expanded(
@@ -141,12 +143,13 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20.0),
-              const Divider(
-                color: Colors.black,
-                height: 2.0,
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                child: Divider(
+                  color: Colors.black,
+                  height: 2.0,
+                ),
               ),
-              const SizedBox(height: 20.0),
               // Informasi Peliharaan
               ExpandablePanel(
                 header: const Text(
@@ -180,10 +183,12 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                       Row(
                         children: [
@@ -207,10 +212,12 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                       Row(
                         children: [
@@ -234,10 +241,12 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                     ],
                   ),
@@ -250,11 +259,6 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
                   children: [
                     Text(
                       "Comments",
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      widget.name,
                       style: TextStyle(
                           fontSize: 20.0, fontWeight: FontWeight.bold),
                     ),

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class detailPostAdoptScreen extends StatefulWidget {
   final String name;
@@ -16,6 +17,8 @@ class detailPostAdoptScreen extends StatefulWidget {
   final Timestamp timestamp;
   final String username;
   final String phoneNumber;
+  final double latitude;
+  final double longitude;
 
   const detailPostAdoptScreen(
       {super.key,
@@ -28,7 +31,9 @@ class detailPostAdoptScreen extends StatefulWidget {
       required this.image_url,
       required this.timestamp,
       required this.username,
-      required this.phoneNumber});
+      required this.phoneNumber,
+      required this.latitude,
+      required this.longitude});
 
   @override
   State<detailPostAdoptScreen> createState() => _detailPostAdoptScreenState();
@@ -44,6 +49,16 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
   void initState() {
     super.initState();
     _loadComments();
+  }
+
+  void _openGoogleMaps() async {
+    final url =
+        'https://maps.google.com/maps?q=${widget.latitude},${widget.longitude}';
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } else {
+      print('Could not launch $url');
+    }
   }
 
   @override
@@ -97,12 +112,13 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                 widget.description,
                 style: TextStyle(fontSize: 16),
               ),
-              const SizedBox(height: 20.0),
-              const Divider(
-                color: Colors.black,
-                height: 2.0,
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 20),
+                child: Divider(
+                  color: Colors.black,
+                  height: 2.0,
+                ),
               ),
-              const SizedBox(height: 20.0),
               // Informasi Peliharaan
               ExpandablePanel(
                 header: const Text(
@@ -136,10 +152,12 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                       Row(
                         children: [
@@ -163,10 +181,12 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                       Row(
                         children: [
@@ -190,10 +210,12 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                       Row(
                         children: [
@@ -218,10 +240,42 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 8,
+                            child: Container(
+                              child: Text("Location"),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Container(
+                              child: Text(": "),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 10,
+                            child: ElevatedButton(
+                              onPressed: _openGoogleMaps,
+                              child: const Text('Open in Google Maps'),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                     ],
                   ),
@@ -260,10 +314,12 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                       Row(
                         children: [
@@ -287,10 +343,12 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                       Row(
                         children: [
@@ -314,10 +372,12 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Divider(
-                        color: Colors.black,
-                        height: 2.0,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5, bottom: 5),
+                        child: Divider(
+                          color: Colors.black,
+                          height: 2.0,
+                        ),
                       ),
                     ],
                   ),

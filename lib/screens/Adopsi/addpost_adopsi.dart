@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/screens/home_screen.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class AddPostAdoptScreen extends StatefulWidget {
   @override
@@ -24,7 +26,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   final List<String> _typeItems = ['Dog', 'Cat'];
   String _username = '';
   String _phoneNumber = '';
-
+  LatLng? _location;
   @override
   void initState() {
     super.initState();
@@ -160,6 +162,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                         );
                         return;
                       }
+                      _location = await CurrentLocation.getCurrentLocation();
                       Reference referenceRoot = FirebaseStorage.instance.ref();
                       Reference referenceDirImages =
                           referenceRoot.child("images");
@@ -187,6 +190,8 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                           'timestamp': Timestamp.now(),
                           'username': _username,
                           'phoneNumber': _phoneNumber,
+                          'location': GeoPoint(
+                              _location!.latitude, _location!.longitude),
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -263,5 +268,32 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
     _ageController.dispose();
     _sizeController.dispose();
     super.dispose();
+  }
+}
+
+class LatLng {
+  final double latitude;
+  final double longitude;
+
+  LatLng({required this.latitude, required this.longitude});
+}
+
+class CurrentLocation {
+  static Future<LatLng> getCurrentLocation() async {
+    final status = await Permission.location.status;
+    if (!status.isGranted) {
+      final result = await Permission.location.request();
+      if (result != PermissionStatus.granted) {
+        throw 'Location permission denied';
+      }
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      return LatLng(latitude: position.latitude, longitude: position.longitude);
+    } catch (e) {
+      throw 'Error getting current location: $e';
+    }
   }
 }

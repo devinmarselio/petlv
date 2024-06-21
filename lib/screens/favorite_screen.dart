@@ -144,6 +144,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                 timestamp: thisItem['timestamp'],
                                 username: thisItem['username'],
                                 phoneNumber: thisItem['phoneNumber'],
+                                latitude: thisItem['latitude'],
+                                longitude: thisItem['longitude'],
                               ),
                             ),
                           ),
