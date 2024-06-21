@@ -192,6 +192,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                           'phoneNumber': _phoneNumber,
                           'location': GeoPoint(
                               _location!.latitude, _location!.longitude),
+                          'isFavorite': false
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
