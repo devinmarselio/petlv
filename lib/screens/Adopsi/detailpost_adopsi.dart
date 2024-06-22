@@ -51,7 +51,9 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
   }
 
   void _openGoogleMaps() async {
-    final url = 'https://maps.google.com/maps?q=${widget.location}';
+    double latitude = widget.location.latitude;
+    double longitude = widget.location.longitude;
+    final url = 'https://maps.google.com/maps?q=$latitude,$longitude';
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } else {
