@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:petlv/screens/home_screen.dart';
 import 'package:petlv/screens/profile_settings_screen.dart';
 import 'package:petlv/screens/services/auth_services.dart';
 import 'package:petlv/screens/sign_in_screen.dart';

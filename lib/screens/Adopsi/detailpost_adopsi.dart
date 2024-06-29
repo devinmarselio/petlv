@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'package:petlv/screens/services/pushNotifications.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class detailPostAdoptScreen extends StatefulWidget {
@@ -54,6 +55,7 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
     double latitude = widget.location.latitude;
     double longitude = widget.location.longitude;
     final url = 'https://maps.google.com/maps?q=$latitude,$longitude';
+    print(widget.location);
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } else {
@@ -569,6 +571,15 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
       'username': username,
       'text': text,
     });
+
+    final posterToken = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.username)
+        .get()
+        .then((doc) => doc.get('deviceToken'));
+
+    // Send a notification to the poster's device
+    await PushNotifications.sendNotificationToUser(posterToken, context);
 
     setState(() {
       _comments.add(Comment(text: text, username: username));

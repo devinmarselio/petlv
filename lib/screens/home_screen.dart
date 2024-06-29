@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,6 +8,7 @@ import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/Adopsi/detailpost_adopsi.dart';
 import 'package:petlv/screens/profile_screen.dart';
 import 'package:petlv/screens/services/buttocks_bar.dart';
+import 'package:petlv/screens/services/pushNotifications.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,6 +20,19 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   SignInScreenState signInScreenState = SignInScreenState();
+
+
+  Future<void> _storeDeviceToken() async {
+    final token = await FirebaseMessaging.instance.getToken();
+    FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.toString()).set({
+      'deviceToken': token,
+    }, SetOptions(merge: true));
+  }
+
+  void initState() {
+    _storeDeviceToken();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
