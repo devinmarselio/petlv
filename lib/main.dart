@@ -10,7 +10,6 @@ import 'package:petlv/themes/theme.dart';
 import 'package:petlv/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -36,9 +35,9 @@ class MyApp extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return BottomNavBarScreen();
+            return SignInScreen();
           } else {
-            return const SignInScreen();
+            return BottomNavBarScreen();
           }
         },
       ),
