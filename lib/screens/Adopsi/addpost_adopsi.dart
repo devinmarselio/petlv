@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/screens/home_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:petlv/screens/services/buttocks_bar.dart';
 
 class AddPostAdoptScreen extends StatefulWidget {
   @override
@@ -207,7 +208,8 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                         );
                         await Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => BottomNavBarScreen()),
                         );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(

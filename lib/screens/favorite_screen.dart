@@ -173,9 +173,24 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                             child: Image.network(post['image_url'],
                                 fit: BoxFit.cover),
                             footer: GridTileBar(
-                              backgroundColor: Colors.black54,
-                              title: Text(post['name']),
-                              subtitle: Text(post['type']),
+                              backgroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .background
+                                  .withOpacity(0.5),
+                              title: Text(
+                                post['name'],
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                              subtitle: Text(
+                                post['type'],
+                                style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
                               trailing: IconButton(
                                 icon: Icon(
                                   post['isFavorite']
