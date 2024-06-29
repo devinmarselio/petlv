@@ -189,15 +189,17 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       final userData = {
-        'profilePicture': _image != null ? await _uploadImage(_image!) : '',
-        'username': _usernameController.text ?? '',
-        'phoneNumber': _numberController.text ?? '',
+        if (_image != null) 'profilePicture': await _uploadImage(_image!),
+        if (_usernameController.text.isNotEmpty)
+          'username': _usernameController.text,
+        if (_numberController.text.isNotEmpty)
+          'phoneNumber': _numberController.text,
       };
 
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-          .set(userData, SetOptions(merge: true));
+          .update(userData);
     }
   }
 
