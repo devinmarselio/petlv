@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await FirebaseMessaging.instance.getToken();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

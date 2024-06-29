@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/screens/home_screen.dart';
@@ -101,6 +102,9 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
               Text('Age'),
               TextField(
                 controller: _ageController,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
                 decoration: InputDecoration(
                   hintText: 'Enter age',
                   suffixText: 'Month',
@@ -112,6 +116,9 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
               Text('Size'),
               TextField(
                 controller: _sizeController,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
                 decoration: InputDecoration(
                   hintText: 'Enter size',
                   suffixText: 'kg',

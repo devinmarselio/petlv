@@ -19,14 +19,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final User? user = FirebaseAuth.instance.currentUser;
   SignInScreenState signInScreenState = SignInScreenState();
-
 
   Future<void> _storeDeviceToken() async {
     final token = await FirebaseMessaging.instance.getToken();
-    FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.toString()).set({
+    FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
       'deviceToken': token,
-    }, SetOptions(merge: true));
+    });
   }
 
   void initState() {
