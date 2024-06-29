@@ -1,37 +1,45 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/Adopsi/detailpost_adopsi.dart';
 import 'package:petlv/screens/profile_screen.dart';
 import 'package:petlv/screens/services/buttocks_bar.dart';
-import 'package:petlv/screens/services/pushNotifications.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final User? user = FirebaseAuth.instance.currentUser;
-  SignInScreenState signInScreenState = SignInScreenState();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   Future<void> _storeDeviceToken() async {
     final token = await FirebaseMessaging.instance.getToken();
-    FirebaseFirestore.instance.collection('users').doc(user!.uid).update({
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser.toString())
+        .set({
       'deviceToken': token,
     });
-  }
-
-  void initState() {
-    _storeDeviceToken();
-    super.initState();
   }
 
   @override
@@ -83,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     offset: const Offset(4, 1)),
               ],
             ),
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(10.0),
               child: Column(
                 children: [
@@ -100,10 +108,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     height: 50,
                     child: TextField(
+                      controller: _searchController,
                       decoration: InputDecoration(
                           labelText: 'Search...',
                           border: OutlineInputBorder(),
                           suffixIcon: Icon(Icons.search)),
+                      onChanged: (query) {
+                        setState(() {
+                          _searchQuery = query.toLowerCase();
+                        });
+                      },
                     ),
                   ),
                   SizedBox(
@@ -121,18 +135,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
-                // Check error
                 if (snapshot.hasError) {
                   return Center(
                     child: Text('Some error occured ${snapshot.error}'),
                   );
                 }
                 if (snapshot.hasData) {
-                  // Get data
                   QuerySnapshot querySnapshot = snapshot.data!;
                   List<QueryDocumentSnapshot> documents = querySnapshot.docs;
 
-                  //Convert the documents to Maps
+                  // Filter data based on search query
                   List<Map<String, dynamic>> items = documents
                       .map((e) => {
                             'id': e.id,
@@ -149,7 +161,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             'location': e['location'],
                             'isFavorite': e['isFavorite'] ?? false,
                           })
-                      .toList();
+                      .where((item) {
+                    return item.containsValue(_searchQuery) ||
+                        item.values.any((value) => value
+                            .toString()
+                            .toLowerCase()
+                            .contains(_searchQuery));
+                  }).toList();
+
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: MediaQuery.of(context).orientation ==
