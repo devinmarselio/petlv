@@ -11,6 +11,15 @@ class FavoriteScreen extends StatefulWidget {
 }
 
 class _FavoriteScreenState extends State<FavoriteScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,8 +68,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                     offset: const Offset(4, 1)),
               ],
             ),
-            child: const Padding(
-              padding: EdgeInsets.all(10.0),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
                   Align(
@@ -76,10 +85,16 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   SizedBox(
                     height: 50,
                     child: TextField(
+                      controller: _searchController,
                       decoration: InputDecoration(
                           labelText: 'Search...',
                           border: OutlineInputBorder(),
                           suffixIcon: Icon(Icons.search)),
+                      onChanged: (query) {
+                        setState(() {
+                          _searchQuery = query.toLowerCase();
+                        });
+                      },
                     ),
                   ),
                   SizedBox(
@@ -105,7 +120,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                             'name': e['name'],
                             'type': e['type'],
                             'age': e['age'],
-                            'size': e['size'],
+                            'ize': e['size'],
                             'description': e['description'],
                             'image_url': e['image_url'],
                             'email': e['email'],
@@ -114,10 +129,16 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                             'phoneNumber': e['phoneNumber'],
                             'isFavorite': e['isFavorite'] ?? false,
                           })
-                      .toList();
+                      .where((item) {
+                    return item.containsValue(_searchQuery) ||
+                        item.values.any((value) => value
+                            .toString()
+                            .toLowerCase()
+                            .contains(_searchQuery));
+                  }).toList();
                   return GridView.builder(
                     padding: const EdgeInsets.all(8.0),
-                    itemCount: snapshot.data!.docs.length,
+                    itemCount: items.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
