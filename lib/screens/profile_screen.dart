@@ -68,9 +68,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
               .doc(user!.uid)
               .snapshots(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              _username = snapshot.data!.get('username') ?? '';
-              _profilePictureUrl = snapshot.data!.get('profilePicture') ?? '';
+            if (snapshot.hasData && snapshot.data != null) {
+              DocumentSnapshot document = snapshot.data!;
+              if (document.exists) {
+                _username = document.get('username');
+                _profilePictureUrl = document.get('profilePicture');
+              } else {
+                _username = 'userName';
+                _profilePictureUrl = '';
+              }
+            } else {
+              _username = 'userName';
+              _profilePictureUrl = '';
             }
             return Column(
               children: [
@@ -117,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             height: MediaQuery.of(context).size.width / 9,
                             child: Center(
                               child: Text(
-                                _username.isEmpty ? 'Username' : _username,
+                                _username,
                                 style: TextStyle(fontSize: 18),
                               ),
                             ),
