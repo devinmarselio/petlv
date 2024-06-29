@@ -178,61 +178,26 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
   }
 
+  Future<String?> _uploadImage(XFile image) async {
+    final ref = FirebaseStorage.instance.ref();
+    final storageRef = ref.child('users/${user!.uid}/profile_picture');
+    await storageRef.putFile(File(image.path));
+    return await storageRef.getDownloadURL();
+  }
+
   Future<void> _updateProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      if (_image != null) {
-        final ref = FirebaseStorage.instance.ref();
-        final storageRef = ref.child('users/${user.uid}/profile_picture');
-        await storageRef.putFile(File(_image!.path));
-        final url = await storageRef.getDownloadURL();
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .update({'profilePicture': url});
-      }
+      final userData = {
+        'profilePicture': _image != null ? await _uploadImage(_image!) : '',
+        'username': _usernameController.text ?? '',
+        'phoneNumber': _numberController.text ?? '',
+      };
 
-      if (_usernameController.text.isNotEmpty) {
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        if (userDoc.exists) {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .update({'username': _usernameController.text});
-        } else {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .set({
-            'username': _usernameController.text,
-            'phoneNumber': _numberController.text ?? '',
-          }, SetOptions(merge: true));
-        }
-      }
-
-      if (_numberController.text.isNotEmpty) {
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .get();
-        if (userDoc.exists) {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .update({'phoneNumber': _numberController.text});
-        } else {
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .set({
-            'phoneNumber': _numberController.text,
-            'username': _usernameController.text ?? '',
-          }, SetOptions(merge: true));
-        }
-      }
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .set(userData, SetOptions(merge: true));
     }
   }
 
