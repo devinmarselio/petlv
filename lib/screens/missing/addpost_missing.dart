@@ -4,14 +4,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:petlv/screens/home_screen.dart';
-import 'package:petlv/screens/missing/missing_screen.dart';
 import 'package:petlv/screens/services/buttocks_bar.dart';
 
 class AddPostMissing extends StatefulWidget {
   @override
   _AddPostMissingState createState() => _AddPostMissingState();
-
 }
 
 class _AddPostMissingState extends State<AddPostMissing> {
@@ -19,25 +16,45 @@ class _AddPostMissingState extends State<AddPostMissing> {
   final _nameController = TextEditingController();
   final _lastseenController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  final _statusController = TextEditingController();
-  String _selectedStatus = "Still Missing";
-  XFile? _image;
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  XFile? _image;
+  String _username = '';
+  String _phoneNumber = '';
+  String _deviceToken = '';
+
+  @override
   void initState() {
     super.initState();
-    _selectedStatus = 'Still Missing';}
+    _loadUserData();
+  }
 
+  Future<void> _loadUserData() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+      if (snapshot.exists) {
+        setState(() {
+          _username = snapshot.data()!['username'];
+          _phoneNumber = snapshot.data()!['phoneNumber'];
+          _deviceToken = snapshot.data()!['deviceToken'];
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading:
-          IconButton(
-              onPressed: (){Navigator.of(context).pop();} ,
-              icon: Icon(Icons.arrow_back)),
-
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Icon(Icons.arrow_back)),
         title: Text('Missing Post'),
       ),
       body: SingleChildScrollView(
@@ -56,35 +73,20 @@ class _AddPostMissingState extends State<AddPostMissing> {
                 ),
               ),
               SizedBox(height: 16),
-              Text('lastseen'),
+              Text('Last Seen'),
               TextField(
                 controller: _lastseenController,
                 decoration: InputDecoration(
-                  hintText: 'Enter lastseen',
+                  hintText: 'Enter last seen',
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
               ),
               SizedBox(height: 16),
-              Text('Status'),
-              DropdownButton<String>(
-                value: _selectedStatus,
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedStatus = newValue!;
-                  });
-                },
-                items: <String>['Still Missing', 'Already Found']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-              SizedBox(height: 16),
               Text('Description'),
               TextField(
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
                 controller: _postTextController,
                 decoration: InputDecoration(
                   hintText: 'Enter your description',
@@ -143,11 +145,14 @@ class _AddPostMissingState extends State<AddPostMissing> {
                         await posts2.add({
                           'name': _nameController.text,
                           'lastseen': _lastseenController.text,
-                          'status': _selectedStatus,
+                          'status': 'Still Missing',
                           'description': _postTextController.text,
                           'image_url': downloadUrl,
                           'email': userEmail,
                           'timestamp': Timestamp.now(),
+                          'username': _username,
+                          'phoneNumber': _phoneNumber,
+                          'deviceToken': _deviceToken,
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -155,7 +160,8 @@ class _AddPostMissingState extends State<AddPostMissing> {
                         );
                         Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => MissingScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => BottomNavBarScreen()),
                         );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(

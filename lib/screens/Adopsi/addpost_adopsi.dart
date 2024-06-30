@@ -2,9 +2,13 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/screens/home_screen.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:petlv/screens/services/buttocks_bar.dart';
 
 class AddPostAdoptScreen extends StatefulWidget {
   @override
@@ -21,18 +25,45 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   XFile? _image;
   String? _selectedType;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-
   final List<String> _typeItems = ['Dog', 'Cat'];
+  String _username = '';
+  String _phoneNumber = '';
+  String _deviceToken = '';
+  LatLng? _location;
+  @override
+
+  void initState() {
+    _loadUserData();
+    super.initState();
+  }
+
+  Future<void> _loadUserData() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+      if (snapshot.exists) {
+        setState(() {
+          _username = snapshot.data()!['username'] ?? "" ;
+          _phoneNumber = snapshot.data()!['phone'] ?? "" ;
+          _deviceToken = snapshot.data()!['deviceToken'] ?? "" ;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading:
-          IconButton(
-              onPressed: () {Navigator.of(context).pop();} ,
-              icon: Icon(Icons.arrow_back))
-        ,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: Icon(Icons.arrow_back)),
         title: Text('Adoption Post'),
       ),
       body: SingleChildScrollView(
@@ -75,6 +106,9 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
               Text('Age'),
               TextField(
                 controller: _ageController,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
                 decoration: InputDecoration(
                   hintText: 'Enter age',
                   suffixText: 'Month',
@@ -86,6 +120,9 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
               Text('Size'),
               TextField(
                 controller: _sizeController,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                ],
                 decoration: InputDecoration(
                   hintText: 'Enter size',
                   suffixText: 'kg',
@@ -136,6 +173,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                         );
                         return;
                       }
+                      _location = await CurrentLocation.getCurrentLocation();
                       Reference referenceRoot = FirebaseStorage.instance.ref();
                       Reference referenceDirImages =
                           referenceRoot.child("images");
@@ -161,14 +199,21 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                           'image_url': downloadUrl,
                           'email': userEmail,
                           'timestamp': Timestamp.now(),
+                          'username': _username,
+                          'phoneNumber': _phoneNumber,
+                          'location': GeoPoint(
+                              _location!.latitude, _location!.longitude),
+                          'isFavorite': false,
+                          'deviceToken': _deviceToken,
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content: Text('Image uploaded successfully')),
                         );
-                        Navigator.pushReplacement(
+                        await Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                          MaterialPageRoute(
+                              builder: (context) => BottomNavBarScreen()),
                         );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -237,5 +282,32 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
     _ageController.dispose();
     _sizeController.dispose();
     super.dispose();
+  }
+}
+
+class LatLng {
+  final double latitude;
+  final double longitude;
+
+  LatLng({required this.latitude, required this.longitude});
+}
+
+class CurrentLocation {
+  static Future<LatLng> getCurrentLocation() async {
+    final status = await Permission.location.status;
+    if (!status.isGranted) {
+      final result = await Permission.location.request();
+      if (result != PermissionStatus.granted) {
+        throw 'Location permission denied';
+      }
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      return LatLng(latitude: position.latitude, longitude: position.longitude);
+    } catch (e) {
+      throw 'Error getting current location: $e';
+    }
   }
 }

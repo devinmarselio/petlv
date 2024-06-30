@@ -45,14 +45,14 @@ class SignInScreenState extends State<SignInScreen> {
               Align(
                   alignment: Alignment.centerLeft,
                   child: const Text(
-                    'Username',
+                    'Email address',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )),
               const SizedBox(height: 5.0),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(
-                  hintText: 'Username',
+                  hintText: 'Email address',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -182,10 +182,6 @@ class SignInScreenState extends State<SignInScreen> {
                               await AuthServices.signInWithGoogle(context);
                           if (userCredential.value != null)
                             print(userCredential.value.user!.email);
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (context) => const HomeScreen()),
-                          );
                         },
                         child: Row(
                           mainAxisSize: MainAxisSize.min,

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -26,9 +27,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   GlobalKey<FormState> key = GlobalKey();
   final User? user = FirebaseAuth.instance.currentUser;
   final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
   final _numberController = TextEditingController();
-  final _passwordController = TextEditingController();
+
   ThemeProvider themeProvider = ThemeProvider();
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
@@ -104,7 +104,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                   ],
                 ),
@@ -114,70 +114,61 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
-              child: SingleChildScrollView(
-                child: Container(
-                  height: 300,
-                  child: Column(
-                    children: [
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'Username',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )),
-                      const SizedBox(height: 5.0),
-                      SizedBox(
-                        height: 60,
-                        child: TextField(
-                            controller: _usernameController,
-                            decoration: const InputDecoration(
-                              hintText: 'Username',
-                              border: OutlineInputBorder(),
-                            )),
-                      ),
-                      const SizedBox(height: 10.0),
-                      Align(
-                          alignment: Alignment.centerLeft,
-                          child: const Text(
-                            'Phone Number',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          )),
-                      const SizedBox(height: 5.0),
-                      SizedBox(
-                        height: 60,
-                        child: TextField(
-                            controller: _usernameController,
-                            decoration: const InputDecoration(
-                              hintText: 'Phone Number',
-                              border: OutlineInputBorder(),
-                            )),
-                      ),
-                      Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 30),
-                        child: SizedBox(
-                          width: 350,
-                          child: ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                  Theme.of(context).colorScheme.primary),
-                            ),
-                            onPressed: () async {
-                              await FirebaseAuth.instance
-                                  .sendPasswordResetEmail(
-                                      email: user?.email ?? '');
-                            },
-                            child: Text(
-                              'Confirm',
-                              style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary),
-                            ),
+              child: Container(
+                height: 300,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          'Username',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                    const SizedBox(height: 5.0),
+                    TextField(
+                        controller: _usernameController,
+                        decoration: const InputDecoration(
+                          hintText: 'Username',
+                          border: OutlineInputBorder(),
+                        )),
+                    const SizedBox(height: 10.0),
+                    Align(
+                        alignment: Alignment.centerLeft,
+                        child: const Text(
+                          'Phone Number',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        )),
+                    const SizedBox(height: 5.0),
+                    TextField(
+                        controller: _numberController,
+                        decoration: const InputDecoration(
+                          hintText: 'Phone Number',
+                          border: OutlineInputBorder(),
+                        )),
+                    Spacer(),
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                                Theme.of(context).colorScheme.primary),
+                          ),
+                          onPressed: () async {
+                            await _updateProfile();
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Confirm',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -185,6 +176,59 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         ],
       ),
     );
+  }
+
+  Future<String?> _uploadImage(XFile image) async {
+    final ref = FirebaseStorage.instance.ref();
+    final storageRef = ref.child('users/${user!.uid}/profile_picture');
+    await storageRef.putFile(File(image.path));
+    return await storageRef.getDownloadURL();
+  }
+
+  Future<void> _updateProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userData = <String, dynamic>{};
+
+      final docRef =
+          FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final docSnapshot = await docRef.get();
+
+      if (docSnapshot.exists) {
+        if (_image != null) {
+          userData['profilePicture'] = await _uploadImage(_image!);
+        }
+
+        if (_usernameController.text.isNotEmpty) {
+          userData['username'] = _usernameController.text;
+        }
+
+        if (_numberController.text.isNotEmpty) {
+          userData['phoneNumber'] = _numberController.text;
+        }
+
+        await docRef.update(userData);
+      } else {
+        if (_image != null) {
+          userData['profilePicture'] = await _uploadImage(_image!);
+        } else {
+          userData['profilePicture'] = '';
+        }
+
+        if (_usernameController.text.isNotEmpty) {
+          userData['username'] = _usernameController.text;
+        } else {
+          userData['username'] = '';
+        }
+
+        if (_numberController.text.isNotEmpty) {
+          userData['phoneNumber'] = _numberController.text;
+        } else {
+          userData['phoneNumber'] = '';
+        }
+        await docRef.set(userData);
+      }
+    }
   }
 
   Future<void> _showImageSourceDialog() async {
