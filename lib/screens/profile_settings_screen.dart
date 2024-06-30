@@ -188,18 +188,46 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   Future<void> _updateProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final userData = {
-        if (_image != null) 'profilePicture': await _uploadImage(_image!),
-        if (_usernameController.text.isNotEmpty)
-          'username': _usernameController.text,
-        if (_numberController.text.isNotEmpty)
-          'phoneNumber': _numberController.text,
-      };
+      final userData = <String, dynamic>{};
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .update(userData);
+      final docRef =
+          FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final docSnapshot = await docRef.get();
+
+      if (docSnapshot.exists) {
+        if (_image != null) {
+          userData['profilePicture'] = await _uploadImage(_image!);
+        }
+
+        if (_usernameController.text.isNotEmpty) {
+          userData['username'] = _usernameController.text;
+        }
+
+        if (_numberController.text.isNotEmpty) {
+          userData['phoneNumber'] = _numberController.text;
+        }
+
+        await docRef.update(userData);
+      } else {
+        if (_image != null) {
+          userData['profilePicture'] = await _uploadImage(_image!);
+        } else {
+          userData['profilePicture'] = '';
+        }
+
+        if (_usernameController.text.isNotEmpty) {
+          userData['username'] = _usernameController.text;
+        } else {
+          userData['username'] = '';
+        }
+
+        if (_numberController.text.isNotEmpty) {
+          userData['phoneNumber'] = _numberController.text;
+        } else {
+          userData['phoneNumber'] = '';
+        }
+        await docRef.set(userData);
+      }
     }
   }
 
