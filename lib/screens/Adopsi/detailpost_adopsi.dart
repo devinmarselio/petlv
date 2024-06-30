@@ -19,6 +19,7 @@ class detailPostAdoptScreen extends StatefulWidget {
   final String username;
   final String phoneNumber;
   final GeoPoint location;
+  final String deviceToken;
 
   const detailPostAdoptScreen({
     super.key,
@@ -33,6 +34,7 @@ class detailPostAdoptScreen extends StatefulWidget {
     required this.username,
     required this.phoneNumber,
     required this.location,
+    required this.deviceToken,
   });
 
   @override
@@ -47,6 +49,10 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
 
   @override
   void initState() {
+    if (widget.deviceToken != null) {
+      var _deviceToken = widget.deviceToken;
+      print(_deviceToken);
+    }
     super.initState();
     _loadComments();
   }
@@ -562,6 +568,7 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
     final FirebaseFirestore _firestore = FirebaseFirestore.instance;
     final String username = '${widget.email}'; // replace with actual username
     final String text = _commentController.text;
+    final String deviceToken = '${widget.deviceToken}';
 
     await _firestore
         .collection('posts')
@@ -572,14 +579,8 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
       'text': text,
     });
 
-    final posterToken = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.username)
-        .get()
-        .then((doc) => doc.get('deviceToken'));
-
     // Send a notification to the poster's device
-    await PushNotifications.sendNotificationToUser(posterToken, context);
+    await PushNotifications.sendNotificationToUser(deviceToken, context);
 
     setState(() {
       _comments.add(Comment(text: text, username: username));

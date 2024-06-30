@@ -17,12 +17,23 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+Future<void> _storeDeviceToken() async {
+  final User? user = FirebaseAuth.instance.currentUser;
+  final token = await FirebaseMessaging.instance.getToken();
+  FirebaseFirestore.instance.collection('users').doc(user!.uid).update(
+    {
+      'deviceToken': token,
+    },
+  );
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
   @override
   void initState() {
+    _storeDeviceToken();
     super.initState();
   }
 
@@ -160,6 +171,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             'phoneNumber': e['phoneNumber'],
                             'location': e['location'],
                             'isFavorite': e['isFavorite'] ?? false,
+                            'deviceToken': (e.data() as Map<String, dynamic>)
+                                    .containsKey('deviceToken')
+                                ? e['deviceToken']
+                                : null,
                           })
                       .where((item) {
                     return item.containsValue(_searchQuery) ||
@@ -199,6 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 username: thisItem['username'],
                                 phoneNumber: thisItem['phoneNumber'],
                                 location: thisItem['location'],
+                                deviceToken: thisItem['deviceToken'],
                               ),
                             ),
                           ),

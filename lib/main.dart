@@ -10,11 +10,45 @@ import 'package:petlv/themes/theme.dart';
 import 'package:petlv/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
+class NotificationHandler {
+  static Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+    // Handle notification when app is in background
+    print('Handling a background message ${message.messageId}');
+    print('Notification data: ${message.data}');
+    if (message.notification != null) {
+      print('Notification also contained a notification: ${message.notification}');
+    }
+  }
+
+  static Future<void> _firebaseMessagingForegroundHandler(RemoteMessage message) async {
+    // Handle notification when app is in foreground
+    print('Handling a foreground message ${message.messageId}');
+    print('Notification data: ${message.data}');
+    if (message.notification != null) {
+      print('Notification also contained a notification: ${message.notification}');
+    }
+  }
+
+  static Future<void> _firebaseMessagingTerminatedHandler(RemoteMessage message) async {
+    // Handle notification when app is terminated
+    print('Handling a terminated message ${message.messageId}');
+    print('Notification data: ${message.data}');
+    if (message.notification != null) {
+      print('Notification also contained a notification: ${message.notification}');
+    }
+  }
+}
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseMessaging.onBackgroundMessage(NotificationHandler._firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onMessage.listen(NotificationHandler._firebaseMessagingForegroundHandler);
+  FirebaseMessaging.onMessageOpenedApp.listen(NotificationHandler._firebaseMessagingTerminatedHandler);
+
   runApp(ChangeNotifierProvider(
     create: (context) => ThemeProvider(),
     child: const MyApp(),

@@ -28,11 +28,13 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   final List<String> _typeItems = ['Dog', 'Cat'];
   String _username = '';
   String _phoneNumber = '';
+  String _deviceToken = '';
   LatLng? _location;
   @override
+
   void initState() {
-    super.initState();
     _loadUserData();
+    super.initState();
   }
 
   Future<void> _loadUserData() async {
@@ -45,8 +47,9 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
               .get();
       if (snapshot.exists) {
         setState(() {
-          _username = snapshot.data()!['username'];
-          _phoneNumber = snapshot.data()!['phoneNumber'];
+          _username = snapshot.data()!['username'] ?? "" ;
+          _phoneNumber = snapshot.data()!['phone'] ?? "" ;
+          _deviceToken = snapshot.data()!['deviceToken'] ?? "" ;
         });
       }
     }
@@ -200,7 +203,8 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                           'phoneNumber': _phoneNumber,
                           'location': GeoPoint(
                               _location!.latitude, _location!.longitude),
-                          'isFavorite': false
+                          'isFavorite': false,
+                          'deviceToken': _deviceToken,
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

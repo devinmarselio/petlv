@@ -20,6 +20,7 @@ class _AddPostMissingState extends State<AddPostMissing> {
   XFile? _image;
   String _username = '';
   String _phoneNumber = '';
+  String _deviceToken = '';
 
   @override
   void initState() {
@@ -39,6 +40,7 @@ class _AddPostMissingState extends State<AddPostMissing> {
         setState(() {
           _username = snapshot.data()!['username'];
           _phoneNumber = snapshot.data()!['phoneNumber'];
+          _deviceToken = snapshot.data()!['deviceToken'];
         });
       }
     }
@@ -150,6 +152,7 @@ class _AddPostMissingState extends State<AddPostMissing> {
                           'timestamp': Timestamp.now(),
                           'username': _username,
                           'phoneNumber': _phoneNumber,
+                          'deviceToken': _deviceToken,
                         });
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

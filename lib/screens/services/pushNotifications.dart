@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
 import 'package:googleapis/servicecontrol/v1.dart' as servicecontrol;
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 
 class PushNotifications {
   static Future<String> getAccessTokens() async {
@@ -26,9 +28,9 @@ class PushNotifications {
     };
 
     List<String> scopes = [
-      "https://www.googleapis.com/auth/userinfo.email"
-          "https://www.googleapis.com/auth/firebase.database"
-          "https://www.googleapis.com/auth/firebase.messaging"
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/firebase.database",
+      "https://www.googleapis.com/auth/firebase.messaging",
     ];
 
     http.Client client = await auth.clientViaServiceAccount(
@@ -47,39 +49,43 @@ class PushNotifications {
     return credentials.accessToken.data;
   }
 
-  static sendNotificationToUser(
-      String deviceToken, BuildContext context) async {
+  static sendNotificationToUser(String deviceToken, BuildContext context) async {
     final String serverKey = await getAccessTokens();
     String endPointFirebaseCloudMessaging =
-        'https://fcm.googleapis.com/v1/projects/petlv-db/message:send';
+        'https://fcm.googleapis.com/v1/projects/petlv-db/messages:send';
 
     final Map<String, dynamic> message = {
-      'message':
-      {
-        'token': deviceToken,
-        'notification':
-        {
-          'title': "New comment on your post!",
-          'body': "Check out the new comment on your post!",
+      "message": {
+        "token": deviceToken,
+        "notification": {
+          "title": "New comment on your post!",
+          "body": "Check out the new comment on your post!",
         },
-        'data':
-        {
-          'postId' : 'Testing',
+        "data": {
+          "postId": "Testing",
         }
       }
     };
 
-    final http.Response response = await http.post(
-      Uri.parse(endPointFirebaseCloudMessaging),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $serverKey',
-      },
-      body: jsonEncode(message),
-    );
 
-    if (response.statusCode!= 200) {
-      print('Error sending notification: ${response.statusCode}');
+    try {
+      final http.Response response = await http.post(
+        Uri.parse(endPointFirebaseCloudMessaging),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $serverKey',
+        },
+        body: jsonEncode(message),
+      );
+
+      if (response.statusCode != 200) {
+        print('Error sending notification: ${response.statusCode}');
+        print('Error sending notification: ${response.body}');
+      } else {
+        print('Notification sent successfully!');
+      }
+    } catch (e) {
+      print('Error sending notification: $e');
     }
   }
 }
