@@ -35,8 +35,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
         actions: [
           IconButton(
             onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => const ProfileScreen()), // ProfilScreen
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
             ),
             icon: Container(
               decoration: BoxDecoration(

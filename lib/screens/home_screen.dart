@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/Adopsi/detailpost_adopsi.dart';
 import 'package:petlv/screens/profile_screen.dart';
+import 'package:petlv/screens/search_screen.dart';
 import 'package:petlv/screens/services/buttocks_bar.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
@@ -30,7 +31,9 @@ Future<void> _storeDeviceToken() async {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-
+  String _selectedType = '';
+  int? _age;
+  String? _size;
   @override
   void initState() {
     _storeDeviceToken();
@@ -69,8 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => const ProfileScreen()), // ProfilScreen
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
             ),
             icon: Container(
               decoration: BoxDecoration(
@@ -118,22 +120,51 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   SizedBox(
                     height: 50,
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                          labelText: 'Search...',
-                          border: OutlineInputBorder(),
-                          suffixIcon: Icon(Icons.search)),
-                      onChanged: (query) {
-                        setState(() {
-                          _searchQuery = query.toLowerCase();
-                        });
-                      },
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: ColorScheme.light(
+                          primary: Colors.white,
+                        ),
+                      ),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                side: BorderSide(color: Colors.black))),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Search...',
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 16),
+                            ),
+                            Icon(
+                              Icons.search,
+                              color: Colors.black,
+                            ),
+                          ],
+                        ),
+                        onPressed: () async {
+                          final result = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => SearchScreen()),
+                          );
+                          if (result != null) {
+                            setState(() {
+                              _searchQuery = result['searchQuery'];
+                              _selectedType = result['selectedType'];
+                              _age = result['age'];
+                              _size = result['size'];
+                            });
+                          }
+                        },
+                      ),
                     ),
                   ),
                   SizedBox(
                     height: 10,
-                  )
+                  ),
                 ],
               ),
             ),
@@ -177,12 +208,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : null,
                           })
                       .where((item) {
-                    return item.containsValue(_searchQuery) ||
-                        item.values.any((value) => value
-                            .toString()
-                            .toLowerCase()
-                            .contains(_searchQuery));
-                  }).toList();
+                        return item.containsValue(_searchQuery) ||
+                            item.values.any((value) => value
+                                .toString()
+                                .toLowerCase()
+                                .contains(_searchQuery));
+                      })
+                      .where((item) =>
+                          _selectedType.isEmpty ||
+                          _selectedType == 'All' ||
+                          item['type'] == _selectedType)
+                      .where((item) => _age == null || item['age'] == _age)
+                      .where((item) => _size == null || item['size'] == _size)
+                      .toList();
 
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
