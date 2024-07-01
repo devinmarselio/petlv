@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -565,28 +566,38 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
   }
 
   void _addComment() async {
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    final String username = '${widget.email}'; // replace with actual username
-    final String text = _commentController.text;
-    final String deviceToken = '${widget.deviceToken}';
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+      final DocumentSnapshot snapshot = await _firestore.collection('users').doc(user.uid).get();
+      final String username = snapshot.get('username').toString();
+      final String text = _commentController.text;
+      final String deviceToken = widget.deviceToken;
 
-    await _firestore
-        .collection('posts')
-        .doc(widget.name)
-        .collection('comments')
-        .add({
-      'username': username,
-      'text': text,
-    });
+      try {
+        await _firestore
+            .collection('posts')
+            .doc(widget.name)
+            .collection('comments')
+            .add({  
+          'username': username,
+          'text': text,
+        });
 
-    // Send a notification to the poster's device
-    await PushNotifications.sendNotificationToUser(deviceToken, context);
+        await PushNotifications.sendNotificationToUser(deviceToken, context);
 
-    setState(() {
-      _comments.add(Comment(text: text, username: username));
-      _commentController.clear();
-    });
+        setState(() {
+          _comments.add(Comment(text: text, username: username));
+          _commentController.clear();
+        });
+      } catch (e) {
+        print('Error adding comment: $e');
+      }
+    } else {
+      print("No user is logged in.");
+    }
   }
+
 }
 
 class Comment {
@@ -597,9 +608,9 @@ class Comment {
 
   Comment(
       {this.id = '',
-      required this.username,
-      required this.text,
-      this.replies = const []});
+        required this.username,
+        required this.text,
+        this.replies = const []});
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(
