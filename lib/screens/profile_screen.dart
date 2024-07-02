@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:petlv/screens/managemypost_screen.dart';
 import 'package:petlv/screens/profile_settings_screen.dart';
 import 'package:petlv/screens/services/auth_services.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
@@ -177,7 +178,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               backgroundColor: MaterialStatePropertyAll(
                                   Theme.of(context).colorScheme.primary),
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const ManageMyPost()),
+                              );
+                            },
                             child: Text(
                               'Manage My Post',
                               style: TextStyle(
