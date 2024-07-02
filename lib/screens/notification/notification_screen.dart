@@ -109,9 +109,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
               itemCount: _notifications.length,
               itemBuilder: (context, index) {
                 return Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.secondary,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: Colors.black, width: 1),
                     boxShadow: [
