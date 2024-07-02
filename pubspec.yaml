@@ -75,7 +75,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/petlv_logo_1_removebg.png"
+  image_path: "assets/images/petlv_logo_2_removebg.png"
 
 flutter:
 
