@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:googleapis_auth/auth_io.dart' as auth;
@@ -49,7 +50,7 @@ class PushNotifications {
     return credentials.accessToken.data;
   }
 
-  static sendNotificationToUser(String deviceToken, BuildContext context) async {
+  static sendNotificationToUser(String deviceToken, String receivingUserId, String username, BuildContext context) async {
     final String serverKey = await getAccessTokens();
     String endPointFirebaseCloudMessaging =
         'https://fcm.googleapis.com/v1/projects/petlv-db/messages:send';
@@ -58,12 +59,9 @@ class PushNotifications {
       "message": {
         "token": deviceToken,
         "notification": {
-          "title": "New comment on your post!",
+          "title": "New comment on your post from ${username}!",
           "body": "Check out the new comment on your post!",
         },
-        "data": {
-          "postId": "Testing",
-        }
       }
     };
 
@@ -84,6 +82,17 @@ class PushNotifications {
       } else {
         print('Notification sent successfully!');
       }
+      // Store notification in Firebase
+      final firestore = FirebaseFirestore.instance;
+      final userCollection = firestore.collection('users');
+      final receivingUserDoc = userCollection.doc(receivingUserId);
+      final notificationCollection = receivingUserDoc.collection('notifications');
+      final notificationData = {
+        'title': 'New comment on your post from ${username}!',
+        'body': 'Check out the new comment on your post!',
+        'timestamp': FieldValue.serverTimestamp(),
+      };
+      await notificationCollection.add(notificationData);
     } catch (e) {
       print('Error sending notification: $e');
     }

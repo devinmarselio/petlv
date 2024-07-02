@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:petlv/screens/home_screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:petlv/screens/services/buttocks_bar.dart';
 
 class AddPostAdoptScreen extends StatefulWidget {
+  String userID;
+
+  AddPostAdoptScreen({super.key, required this.userID});
+
   @override
   _AddPostAdoptScreenState createState() => _AddPostAdoptScreenState();
 }
@@ -29,11 +32,14 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   String _username = '';
   String _phoneNumber = '';
   String _deviceToken = '';
+  String _userID = '';
   LatLng? _location;
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     _loadUserData();
+    _userID = widget.userID;
+    print(_userID);
     super.initState();
   }
 
@@ -236,6 +242,7 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                                   _location!.latitude, _location!.longitude),
                               'isFavorite': false,
                               'deviceToken': _deviceToken,
+                              'userID': _userID,
                             });
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(

@@ -21,6 +21,7 @@ class detailPostAdoptScreen extends StatefulWidget {
   final String phoneNumber;
   final GeoPoint location;
   final String deviceToken;
+  final String userID;
 
   const detailPostAdoptScreen({
     super.key,
@@ -36,6 +37,7 @@ class detailPostAdoptScreen extends StatefulWidget {
     required this.phoneNumber,
     required this.location,
     required this.deviceToken,
+    required this.userID,
   });
 
   @override
@@ -584,7 +586,7 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
           'text': text,
         });
 
-        await PushNotifications.sendNotificationToUser(deviceToken, context);
+        await PushNotifications.sendNotificationToUser(deviceToken, widget.userID, username, context);
 
         setState(() {
           _comments.add(Comment(text: text, username: username));
@@ -597,7 +599,6 @@ class _detailPostAdoptScreenState extends State<detailPostAdoptScreen> {
       print("No user is logged in.");
     }
   }
-
 }
 
 class Comment {

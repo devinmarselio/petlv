@@ -22,11 +22,13 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedType = '';
+  String _userID = '';
   int? _age;
   String? _size;
   @override
+
   void initState() {
-    _storeDeviceToken();
+    _storeCredential();
     super.initState();
   }
 
@@ -36,16 +38,18 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  Future<void> _storeDeviceToken() async {
+  Future<void> _storeCredential() async {
     final token = await FirebaseMessaging.instance.getToken();
-    final userId = FirebaseAuth.instance.currentUser?.uid;
-    if (userId!= null) {
+    _userID = FirebaseAuth.instance.currentUser!.uid;
+    if (_userID!= null) {
       FirebaseFirestore.instance
           .collection('users')
-          .doc(userId)
+          .doc(_userID)
           .update({
         'deviceToken': token,
       });
+      print(token);
+      print(_userID);
     }
   }
 
@@ -199,6 +203,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .containsKey('deviceToken')
                                 ? e['deviceToken']
                                 : null,
+                            'userID': (e.data() as Map<String, dynamic>)
+                                .containsKey('userID')
+                                ? e['userID']
+                                : null,
                           })
                       .where((item) {
                         return item.containsValue(_searchQuery) ||
@@ -246,6 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 phoneNumber: thisItem['phoneNumber'],
                                 location: thisItem['location'],
                                 deviceToken: thisItem['deviceToken'],
+                                userID: thisItem['userID'],
                               ),
                             ),
                           ),
@@ -331,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.background,
           onPressed: () async => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => AddPostAdoptScreen()),
+            MaterialPageRoute(builder: (context) => AddPostAdoptScreen(userID: _userID,)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

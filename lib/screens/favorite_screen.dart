@@ -166,6 +166,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                                 phoneNumber: thisItem['phoneNumber'],
                                 location: thisItem['location'],
                                 deviceToken: thisItem['deviceToken'],
+                                userID: thisItem['userID'],
                               ),
                             ),
                           ),
