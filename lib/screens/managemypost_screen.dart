@@ -106,7 +106,10 @@ class _ManageMyPostState extends State<ManageMyPost> {
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.background,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.black, width: 1),
+                              border: Border.all(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  width: 1),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.2),
@@ -188,7 +191,10 @@ class _ManageMyPostState extends State<ManageMyPost> {
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.background,
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.black, width: 1),
+                              border: Border.all(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  width: 1),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.grey.withOpacity(0.2),

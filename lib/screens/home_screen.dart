@@ -26,7 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int? _age;
   String? _size;
   @override
-
   void initState() {
     _storeCredential();
     super.initState();
@@ -41,11 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _storeCredential() async {
     final token = await FirebaseMessaging.instance.getToken();
     _userID = FirebaseAuth.instance.currentUser!.uid;
-    if (_userID!= null) {
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(_userID)
-          .update({
+    if (_userID != null) {
+      FirebaseFirestore.instance.collection('users').doc(_userID).update({
         'deviceToken': token,
       });
       print(token);
@@ -118,27 +114,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     height: 50,
                     child: Theme(
-                      data: Theme.of(context).copyWith(
-                        colorScheme: ColorScheme.light(
-                          primary: Colors.white,
-                        ),
-                      ),
+                      data: Theme.of(context)
+                          .copyWith(cardColor: Colors.transparent),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0),
-                                side: BorderSide(color: Colors.black))),
+                                side: BorderSide(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary))),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'Search...',
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 16),
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  fontSize: 16),
                             ),
                             Icon(
                               Icons.search,
-                              color: Colors.black,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                           ],
                         ),
@@ -204,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? e['deviceToken']
                                 : null,
                             'userID': (e.data() as Map<String, dynamic>)
-                                .containsKey('userID')
+                                    .containsKey('userID')
                                 ? e['userID']
                                 : null,
                           })
@@ -340,7 +338,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.background,
           onPressed: () async => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => AddPostAdoptScreen(userID: _userID,)),
+            MaterialPageRoute(
+                builder: (context) => AddPostAdoptScreen(
+                      userID: _userID,
+                    )),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
