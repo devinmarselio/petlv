@@ -32,6 +32,7 @@ class _EditAdoptPostPageState extends State<EditAdoptPostPage> {
 
   final List<String> _typeItems = ['Dog', 'Cat'];
 
+  bool isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -45,195 +46,219 @@ class _EditAdoptPostPageState extends State<EditAdoptPostPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Edit Adopt Post'),
-        actions: [
-          IconButton(
-              onPressed: () async {
-                await _showDeleteDialog();
-              },
-              icon: Icon(Icons.delete)),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Name'),
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: 'Enter name',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+    return Stack(children: [
+      Scaffold(
+        appBar: AppBar(
+          title: Text('Edit Adopt Post'),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await _showDeleteDialog();
+                },
+                icon: Icon(Icons.delete)),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Name'),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter name',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Kolom tidak boleh kosong';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Kolom tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 16),
-                Text('Type'),
-                DropdownButtonFormField<String>(
-                  value: _selectedType,
-                  validator: (value) =>
-                      value == null ? 'Kolom tidak boleh kosong' : null,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
+                  SizedBox(height: 16),
+                  Text('Type'),
+                  DropdownButtonFormField<String>(
+                    value: _selectedType,
+                    validator: (value) =>
+                        value == null ? 'Kolom tidak boleh kosong' : null,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    items: _typeItems.map((String type) {
+                      return DropdownMenuItem<String>(
+                        value: type,
+                        child: Text(type),
+                      );
+                    }).toList(),
+                    onChanged: (String? newType) {
+                      setState(() {
+                        _selectedType = newType;
+                      });
+                    },
                   ),
-                  items: _typeItems.map((String type) {
-                    return DropdownMenuItem<String>(
-                      value: type,
-                      child: Text(type),
-                    );
-                  }).toList(),
-                  onChanged: (String? newType) {
-                    setState(() {
-                      _selectedType = newType;
-                    });
-                  },
-                ),
-                SizedBox(height: 16),
-                Text('Age'),
-                TextFormField(
-                  controller: _ageController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Kolom tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                  ],
-                  decoration: InputDecoration(
-                    hintText: 'Enter age',
-                    suffixText: 'Month',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-                SizedBox(height: 16),
-                Text('Size'),
-                TextFormField(
-                  controller: _sizeController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Kolom tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
-                  ],
-                  decoration: InputDecoration(
-                    hintText: 'Enter size',
-                    suffixText: 'kg',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                  maxLines: 1,
-                ),
-                SizedBox(height: 16),
-                Text('Description'),
-                TextFormField(
-                  controller: _postTextController,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Kolom tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Enter your description',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
-                SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () async {
-                    await _showImageSourceDialog();
-                  },
-                  child: Center(
-                    child: Container(
-                      width: 200,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: _image != null
-                          ? Image.file(File(_image!.path))
-                          : _imageUrl != null
-                              ? Image.network(_imageUrl!)
-                              : Icon(Icons.camera_alt),
+                  SizedBox(height: 16),
+                  Text('Age'),
+                  TextFormField(
+                    controller: _ageController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Kolom tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                    ],
+                    decoration: InputDecoration(
+                      hintText: 'Enter age',
+                      suffixText: 'Month',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
-                ),
-                SizedBox(height: 16),
-                Center(
-                  child: SizedBox(
-                    width: 400,
-                    height: 50,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          try {
-                            if (_image != null) {
-                              Reference referenceRoot =
-                                  FirebaseStorage.instance.ref();
-                              Reference referenceDirImages =
-                                  referenceRoot.child("images");
-                              Reference referenceImagesToUpload =
-                                  referenceDirImages
-                                      .child(_image!.path.split("/").last);
-                              final uploadTask = await referenceImagesToUpload
-                                  .putFile(File(_image!.path));
-                              final downloadUrl =
-                                  await uploadTask.ref.getDownloadURL();
-                              _imageUrl = downloadUrl;
-                            }
+                  SizedBox(height: 16),
+                  Text('Size'),
+                  TextFormField(
+                    controller: _sizeController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Kolom tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
+                    ],
+                    decoration: InputDecoration(
+                      hintText: 'Enter size',
+                      suffixText: 'kg',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    maxLines: 1,
+                  ),
+                  SizedBox(height: 16),
+                  Text('Description'),
+                  TextFormField(
+                    controller: _postTextController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Kolom tidak boleh kosong';
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      hintText: 'Enter your description',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  GestureDetector(
+                    onTap: () async {
+                      await _showImageSourceDialog();
+                    },
+                    child: Center(
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: _image != null
+                            ? Image.file(File(_image!.path))
+                            : _imageUrl != null
+                                ? Image.network(_imageUrl!)
+                                : Icon(Icons.camera_alt),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Center(
+                    child: SizedBox(
+                      width: 400,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              if (_image != null) {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                Reference referenceRoot =
+                                    FirebaseStorage.instance.ref();
+                                Reference referenceDirImages =
+                                    referenceRoot.child("images");
+                                Reference referenceImagesToUpload =
+                                    referenceDirImages
+                                        .child(_image!.path.split("/").last);
+                                final uploadTask = await referenceImagesToUpload
+                                    .putFile(File(_image!.path));
+                                final downloadUrl =
+                                    await uploadTask.ref.getDownloadURL();
+                                _imageUrl = downloadUrl;
+                              }
 
-                            _firestore
-                                .collection('posts')
-                                .doc(widget.post.id)
-                                .update({
-                              'name': _nameController.text,
-                              'type': _selectedType,
-                              'age': _ageController.text,
-                              'size': _sizeController.text,
-                              'description': _postTextController.text,
-                              'image_url': _imageUrl,
-                            });
-                            Navigator.of(context).pop();
-                          } catch (e) {}
-                        }
-                      },
-                      style: ButtonStyle(
-                          backgroundColor: MaterialStatePropertyAll(
-                              Theme.of(context).colorScheme.primary)),
-                      child: Text(
-                        'Save Edits',
-                        style: TextStyle(color: Colors.white),
+                              _firestore
+                                  .collection('posts')
+                                  .doc(widget.post.id)
+                                  .update({
+                                'name': _nameController.text,
+                                'type': _selectedType,
+                                'age': _ageController.text,
+                                'size': _sizeController.text,
+                                'description': _postTextController.text,
+                                'image_url': _imageUrl,
+                              });
+                              setState(() {
+                                isLoading = false;
+                              });
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Post has been edited')),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Error uploading image: $e')),
+                              );
+                            }
+                          }
+                        },
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                                Theme.of(context).colorScheme.primary)),
+                        child: Text(
+                          'Save Edits',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-    );
+      isLoading
+          ? Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : Container(),
+    ]);
   }
 
   Future<void> _showImageSourceDialog() async {
@@ -309,6 +334,9 @@ class _EditAdoptPostPageState extends State<EditAdoptPostPage> {
                           .delete();
                       Navigator.of(context).pop();
                       Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Post has been deleted')),
+                      );
                     } catch (e) {}
                   },
                 ),

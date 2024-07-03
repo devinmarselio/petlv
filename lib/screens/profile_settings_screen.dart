@@ -32,150 +32,161 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   ThemeProvider themeProvider = ThemeProvider();
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
-
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
-        title: const Text('User Settings', style: TextStyle(fontSize: 18)),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          Stack(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.width / 4,
-                width: double.infinity,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 30),
-                        child: Stack(
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.white, width: 4),
-                                  shape: BoxShape.circle),
-                              child: CircleAvatar(
-                                backgroundColor: Colors.grey.shade300,
-                                radius: 70,
-                                backgroundImage: _image != null
-                                    ? FileImage(File(_image!.path))
-                                        as ImageProvider<Object>
-                                    : AssetImage(
-                                        'assets/images/placeholder_image.png'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        await _showImageSourceDialog();
-                      },
-                      child: SizedBox(
-                        width: MediaQuery.of(context).size.width / 3,
-                        height: MediaQuery.of(context).size.width / 9,
-                        child: const Center(
-                          child: Text(
-                            'Change Picture',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                  ],
-                ),
-              )
-            ],
+    return Stack(children: [
+      Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.background,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(Icons.arrow_back_ios),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Container(
-                height: 300,
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: const Text(
-                          'Username',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                    const SizedBox(height: 5.0),
-                    TextField(
-                        controller: _usernameController,
-                        decoration: const InputDecoration(
-                          hintText: 'Username',
-                          border: OutlineInputBorder(),
-                        )),
-                    const SizedBox(height: 10.0),
-                    Align(
-                        alignment: Alignment.centerLeft,
-                        child: const Text(
-                          'Phone Number',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
-                    const SizedBox(height: 5.0),
-                    TextField(
-                        controller: _numberController,
-                        decoration: const InputDecoration(
-                          hintText: 'Phone Number',
-                          border: OutlineInputBorder(),
-                        )),
-                    Spacer(),
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll(
-                                Theme.of(context).colorScheme.primary),
-                          ),
-                          onPressed: () async {
-                            await _updateProfile();
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            'Confirm',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary),
+          title: const Text('User Settings', style: TextStyle(fontSize: 18)),
+          centerTitle: true,
+        ),
+        body: Column(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.width / 4,
+                  width: double.infinity,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 30),
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.white, width: 4),
+                                    shape: BoxShape.circle),
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.grey.shade300,
+                                  radius: 70,
+                                  backgroundImage: _image != null
+                                      ? FileImage(File(_image!.path))
+                                          as ImageProvider<Object>
+                                      : AssetImage(
+                                          'assets/images/placeholder_image.png'),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      GestureDetector(
+                        onTap: () async {
+                          await _showImageSourceDialog();
+                        },
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width / 3,
+                          height: MediaQuery.of(context).size.width / 9,
+                          child: const Center(
+                            child: Text(
+                              'Change Picture',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Container(
+                  height: 300,
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Username',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )),
+                      const SizedBox(height: 5.0),
+                      TextField(
+                          controller: _usernameController,
+                          decoration: const InputDecoration(
+                            hintText: 'Username',
+                            border: OutlineInputBorder(),
+                          )),
+                      const SizedBox(height: 10.0),
+                      Align(
+                          alignment: Alignment.centerLeft,
+                          child: const Text(
+                            'Phone Number',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          )),
+                      const SizedBox(height: 5.0),
+                      TextField(
+                          controller: _numberController,
+                          decoration: const InputDecoration(
+                            hintText: 'Phone Number',
+                            border: OutlineInputBorder(),
+                          )),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                  Theme.of(context).colorScheme.primary),
+                            ),
+                            onPressed: () async {
+                              await _updateProfile();
+                              Navigator.pop(context);
+                            },
+                            child: Text(
+                              'Confirm',
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
-    );
+      isLoading
+          ? Container(
+              color: Colors.black.withOpacity(0.5),
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : Container(),
+    ]);
   }
 
   Future<String?> _uploadImage(XFile image) async {
@@ -187,6 +198,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
   Future<void> _updateProfile() async {
     final user = FirebaseAuth.instance.currentUser;
+    setState(() {
+      isLoading = true;
+    });
     if (user != null) {
       final userData = <String, dynamic>{};
 
@@ -229,6 +243,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
         await docRef.set(userData);
       }
     }
+    setState(() {
+      isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('User Profile has been changed')),
+    );
   }
 
   Future<void> _showImageSourceDialog() async {
