@@ -30,7 +30,8 @@ class DetailPostMissingScreen extends StatefulWidget {
       required this.description,
       required this.image_url,
       required this.timestamp,
-      required this.username, required this.deviceToken,
+      required this.username,
+      required this.deviceToken,
       required this.userID,
       required this.phoneNumber});
 

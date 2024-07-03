@@ -110,11 +110,11 @@ class _NotificationScreenState extends State<NotificationScreen> {
               itemBuilder: (context, index) {
                 return Container(
                   margin:
-                      const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.background,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.black, width: 1),
+                    border: Border.all(color: Theme.of(context).colorScheme.secondary, width: 1),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.grey.withOpacity(0.2),
@@ -126,7 +126,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   ),
                   padding: EdgeInsets.all(16),
                   child: ListTile(
-                    title: Text(_notifications[index].title),
+                    title: Text(_notifications[index].title, style: TextStyle(color: Theme.of(context).colorScheme.secondary),),
                   ),
                 );
               },

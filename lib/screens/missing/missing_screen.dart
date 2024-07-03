@@ -116,6 +116,14 @@ class _MissingScreenState extends State<MissingScreen> {
                             'status': e['status'],
                             'username': e['username'],
                             'phoneNumber': e['phoneNumber'],
+                            'deviceToken': (e.data() as Map<String, dynamic>)
+                                    .containsKey('deviceToken')
+                                ? e['deviceToken']
+                                : null,
+                            'userID': (e.data() as Map<String, dynamic>)
+                                    .containsKey('userID')
+                                ? e['userID']
+                                : null,
                           })
                       .toList();
                   return GridView.builder(
@@ -216,7 +224,10 @@ class _MissingScreenState extends State<MissingScreen> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.background,
           onPressed: () async => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => AddPostMissing(userID: '_userID',)),
+            MaterialPageRoute(
+                builder: (context) => AddPostMissing(
+                      userID: '_userID',
+                    )),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

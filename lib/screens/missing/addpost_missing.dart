@@ -190,6 +190,7 @@ class _AddPostMissingState extends State<AddPostMissing> {
                                 'username': _username,
                                 'phoneNumber': _phoneNumber,
                                 'deviceToken': _deviceToken,
+                                'userID' : _userID,
                               });
                               setState(() {
                                 isLoading = false;
