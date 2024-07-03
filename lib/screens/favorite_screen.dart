@@ -119,13 +119,22 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                             'name': e['name'],
                             'type': e['type'],
                             'age': e['age'],
-                            'ize': e['size'],
+                            'size': e['size'],
                             'description': e['description'],
                             'image_url': e['image_url'],
                             'email': e['email'],
                             'timestamp': e['timestamp'],
                             'username': e['username'],
                             'phoneNumber': e['phoneNumber'],
+                            'location': e['location'],
+                            'deviceToken': (e.data() as Map<String, dynamic>)
+                                    .containsKey('deviceToken')
+                                ? e['deviceToken']
+                                : null,
+                            'userID': (e.data() as Map<String, dynamic>)
+                                    .containsKey('userID')
+                                ? e['userID']
+                                : null,
                             'isFavorite': e['isFavorite'] ?? false,
                           })
                       .where((item) {
