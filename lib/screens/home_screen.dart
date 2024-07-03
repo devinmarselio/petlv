@@ -1,23 +1,53 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 import 'package:petlv/screens/Adopsi/detailpost_adopsi.dart';
 import 'package:petlv/screens/profile_screen.dart';
+import 'package:petlv/screens/search_screen.dart';
 import 'package:petlv/screens/services/buttocks_bar.dart';
 import 'package:petlv/screens/sign_in_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  SignInScreenState signInScreenState = SignInScreenState();
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  String _selectedType = '';
+  String _userID = '';
+  int? _age;
+  String? _size;
+  @override
+  void initState() {
+    _storeCredential();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _storeCredential() async {
+    final token = await FirebaseMessaging.instance.getToken();
+    _userID = FirebaseAuth.instance.currentUser!.uid;
+    if (_userID != null) {
+      FirebaseFirestore.instance.collection('users').doc(_userID).update({
+        'deviceToken': token,
+      });
+      print(token);
+      print(_userID);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute(
-                  builder: (context) => const ProfileScreen()), // ProfilScreen
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
             ),
             icon: Container(
               decoration: BoxDecoration(
@@ -68,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     offset: const Offset(4, 1)),
               ],
             ),
-            child: const Padding(
+            child: Padding(
               padding: EdgeInsets.all(10.0),
               child: Column(
                 children: [
@@ -82,11 +111,54 @@ class _HomeScreenState extends State<HomeScreen> {
                           fontSize: 34),
                     ),
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                        labelText: 'Search...',
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.search)),
+                  SizedBox(
+                    height: 50,
+                    child: Theme(
+                      data: Theme.of(context)
+                          .copyWith(cardColor: Colors.transparent),
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                                side: BorderSide(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary))),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Search...',
+                              style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  fontSize: 16),
+                            ),
+                            Icon(
+                              Icons.search,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ],
+                        ),
+                        onPressed: () async {
+                          final result = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                                builder: (context) => SearchScreen()),
+                          );
+                          if (result != null) {
+                            setState(() {
+                              _searchQuery = result['searchQuery'];
+                              _selectedType = result['selectedType'];
+                              _age = result['age'];
+                              _size = result['size'];
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                 ],
               ),
@@ -100,17 +172,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   .snapshots(),
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
-                // Check error
                 if (snapshot.hasError) {
                   return Center(
                     child: Text('Some error occured ${snapshot.error}'),
                   );
                 }
                 if (snapshot.hasData) {
-                  // Get data
                   QuerySnapshot querySnapshot = snapshot.data!;
                   List<QueryDocumentSnapshot> documents = querySnapshot.docs;
-                  //Convert the documents to Maps
+
+                  // Filter data based on search query
                   List<Map<String, dynamic>> items = documents
                       .map((e) => {
                             'id': e.id,
@@ -122,8 +193,34 @@ class _HomeScreenState extends State<HomeScreen> {
                             'image_url': e['image_url'],
                             'email': e['email'],
                             'timestamp': e['timestamp'],
+                            'username': e['username'],
+                            'phoneNumber': e['phoneNumber'],
+                            'location': e['location'],
+                            'isFavorite': e['isFavorite'] ?? false,
+                            'deviceToken': (e.data() as Map<String, dynamic>)
+                                    .containsKey('deviceToken')
+                                ? e['deviceToken']
+                                : null,
+                            'userID': (e.data() as Map<String, dynamic>)
+                                    .containsKey('userID')
+                                ? e['userID']
+                                : null,
                           })
+                      .where((item) {
+                        return item.containsValue(_searchQuery) ||
+                            item.values.any((value) => value
+                                .toString()
+                                .toLowerCase()
+                                .contains(_searchQuery));
+                      })
+                      .where((item) =>
+                          _selectedType.isEmpty ||
+                          _selectedType == 'All' ||
+                          item['type'] == _selectedType)
+                      .where((item) => _age == null || item['age'] == _age)
+                      .where((item) => _size == null || item['size'] == _size)
                       .toList();
+
                   return GridView.builder(
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: MediaQuery.of(context).orientation ==
@@ -151,8 +248,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 description: thisItem['description'],
                                 image_url: thisItem['image_url'],
                                 timestamp: thisItem['timestamp'],
+                                username: thisItem['username'],
+                                phoneNumber: thisItem['phoneNumber'],
+                                location: thisItem['location'],
+                                deviceToken: thisItem['deviceToken'],
+                                userID: thisItem['userID'],
                               ),
-                            ), // ProfilScreen
+                            ),
                           ),
                           child: Card(
                             child: Column(
@@ -183,11 +285,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Text('${thisItem['age']} month old')
                                       ],
                                     ),
-                                    Expanded(child: SizedBox()),
+                                    const Expanded(child: SizedBox()),
                                     IconButton(
                                       icon: Icon(
-                                        thisItem['isFavorite'] != null &&
-                                                thisItem['isFavorite']
+                                        thisItem['isFavorite']
                                             ? Icons.bookmark
                                             : Icons.bookmark_outline,
                                         color: Theme.of(context)
@@ -197,10 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       onPressed: () async {
                                         setState(() {
                                           thisItem['isFavorite'] =
-                                              thisItem['isFavorite'] != null &&
-                                                      thisItem['isFavorite']
-                                                  ? false
-                                                  : true;
+                                              !thisItem['isFavorite'];
                                         });
                                         // Simpan status favorit ke Firestore
                                         await FirebaseFirestore.instance
@@ -227,6 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
           ),
+          SizedBox(height: 80)
         ],
       ),
       floatingActionButton: Container(
@@ -239,7 +338,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.background,
           onPressed: () async => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => AddPostAdoptScreen()),
+            MaterialPageRoute(
+                builder: (context) => AddPostAdoptScreen(
+                      userID: _userID,
+                    )),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -18,8 +18,6 @@ class MissingScreen extends StatefulWidget {
 }
 
 class _MissingScreenState extends State<MissingScreen> {
-  SignInScreenState signInScreenState = SignInScreenState();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +74,7 @@ class _MissingScreenState extends State<MissingScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      'Missing ',
+                      'Missing Animal',
                       style: TextStyle(
                           color: Color(0xffC67C4E),
                           fontWeight: FontWeight.bold,
@@ -115,7 +113,17 @@ class _MissingScreenState extends State<MissingScreen> {
                             'image_url': e['image_url'],
                             'email': e['email'],
                             'timestamp': e['timestamp'],
-                            'status': e['status']
+                            'status': e['status'],
+                            'username': e['username'],
+                            'phoneNumber': e['phoneNumber'],
+                            'deviceToken': (e.data() as Map<String, dynamic>)
+                                    .containsKey('deviceToken')
+                                ? e['deviceToken']
+                                : null,
+                            'userID': (e.data() as Map<String, dynamic>)
+                                    .containsKey('userID')
+                                ? e['userID']
+                                : null,
                           })
                       .toList();
                   return GridView.builder(
@@ -136,15 +144,20 @@ class _MissingScreenState extends State<MissingScreen> {
                         child: GestureDetector(
                           onTap: () async => Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => DetailMissing(
-                                  // name: thisItem['name'],
-                                  // age: thisItem['age'],
-                                  // size: thisItem['size'],
-                                  // description: thisItem['description'],
-                                  // image_url: thisItem['image_url'],
-                                  // timestamp: thisItem['timestamp'],
-                                  ),
-                            ), // ProfilScreen
+                              builder: (context) => DetailPostMissingScreen(
+                                name: thisItem['name'],
+                                email: thisItem['email'],
+                                lastseen: thisItem['lastseen'],
+                                status: thisItem['status'],
+                                description: thisItem['description'],
+                                image_url: thisItem['image_url'],
+                                timestamp: thisItem['timestamp'],
+                                username: thisItem['username'],
+                                phoneNumber: thisItem['phoneNumber'],
+                                deviceToken: thisItem['deviceToken'],
+                                userID: thisItem['userID'],
+                              ),
+                            ),
                           ),
                           child: Card(
                             child: Column(
@@ -198,6 +211,7 @@ class _MissingScreenState extends State<MissingScreen> {
               },
             ),
           ),
+          SizedBox(height: 80)
         ],
       ),
       floatingActionButton: Container(
@@ -210,7 +224,10 @@ class _MissingScreenState extends State<MissingScreen> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.background,
           onPressed: () async => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => AddPostMissing()),
+            MaterialPageRoute(
+                builder: (context) => AddPostMissing(
+                      userID: '_userID',
+                    )),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -242,14 +259,4 @@ class _MissingScreenState extends State<MissingScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
     );
   }
-}
-
-Widget timestaps(Map thisItem) {
-  Timestamp timestamp = thisItem['timestamp'];
-  DateTime dateTime = timestamp.toDate();
-
-  return Text(
-    '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute}',
-    style: const TextStyle(fontSize: 12),
-  );
 }

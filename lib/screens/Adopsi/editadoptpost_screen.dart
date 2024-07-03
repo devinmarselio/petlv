@@ -1,24 +1,26 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:petlv/screens/services/buttocks_bar.dart';
+import 'package:petlv/screens/Adopsi/addpost_adopsi.dart';
 
-class AddPostAdoptScreen extends StatefulWidget {
-  String userID;
+class EditAdoptPostPage extends StatefulWidget {
+  final DocumentSnapshot post;
 
-  AddPostAdoptScreen({super.key, required this.userID});
+  EditAdoptPostPage({required this.post});
 
   @override
-  _AddPostAdoptScreenState createState() => _AddPostAdoptScreenState();
+  _EditAdoptPostPageState createState() => _EditAdoptPostPageState();
 }
 
-class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
+class _EditAdoptPostPageState extends State<EditAdoptPostPage> {
+  final _formKey = GlobalKey<FormState>();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final _postTextController = TextEditingController();
   final _nameController = TextEditingController();
   final _ageController = TextEditingController();
@@ -26,39 +28,20 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
   final ImagePicker _picker = ImagePicker();
   XFile? _image;
   String? _selectedType;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? _imageUrl;
+
   final List<String> _typeItems = ['Dog', 'Cat'];
-  String _username = '';
-  String _phoneNumber = '';
-  String _deviceToken = '';
-  String _userID = '';
-  LatLng? _location;
-  final _formKey = GlobalKey<FormState>();
+
   bool isLoading = false;
   @override
   void initState() {
-    _loadUserData();
-    _userID = widget.userID;
-    print(_userID);
     super.initState();
-  }
-
-  Future<void> _loadUserData() async {
-    final User? user = _auth.currentUser;
-    if (user != null) {
-      final DocumentSnapshot<Map<String, dynamic>> snapshot =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .get();
-      if (snapshot.exists) {
-        setState(() {
-          _username = snapshot.data()!['username'] ?? "";
-          _phoneNumber = snapshot.data()!['phone'] ?? "";
-          _deviceToken = snapshot.data()!['deviceToken'] ?? "";
-        });
-      }
-    }
+    _imageUrl = widget.post['image_url'];
+    _selectedType = widget.post['type'];
+    _nameController.text = widget.post['name'];
+    _ageController.text = widget.post['age'];
+    _sizeController.text = widget.post['size'];
+    _postTextController.text = widget.post['description'];
   }
 
   @override
@@ -66,12 +49,14 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
     return Stack(children: [
       Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              icon: Icon(Icons.arrow_back)),
-          title: Text('Adoption Post'),
+          title: Text('Edit Adopt Post'),
+          actions: [
+            IconButton(
+                onPressed: () async {
+                  await _showDeleteDialog();
+                },
+                icon: Icon(Icons.delete)),
+          ],
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -84,17 +69,17 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                   Text('Name'),
                   TextFormField(
                     controller: _nameController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter name',
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Kolom tidak boleh kosong';
                       }
                       return null;
                     },
-                    decoration: InputDecoration(
-                      hintText: 'Enter name',
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
                   ),
                   SizedBox(height: 16),
                   Text('Type'),
@@ -103,7 +88,6 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                     validator: (value) =>
                         value == null ? 'Kolom tidak boleh kosong' : null,
                     decoration: InputDecoration(
-                      hintText: 'Select type',
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
@@ -191,7 +175,9 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                         ),
                         child: _image != null
                             ? Image.file(File(_image!.path))
-                            : Icon(Icons.camera_alt),
+                            : _imageUrl != null
+                                ? Image.network(_imageUrl!)
+                                : Icon(Icons.camera_alt),
                       ),
                     ),
                   ),
@@ -203,66 +189,42 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                       child: ElevatedButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            if (_image == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text('Please select an image')),
-                              );
-                              return;
-                            }
-                            setState(() {
-                              isLoading = true;
-                            });
-                            _location =
-                                await CurrentLocation.getCurrentLocation();
-                            Reference referenceRoot =
-                                FirebaseStorage.instance.ref();
-                            Reference referenceDirImages =
-                                referenceRoot.child("images");
-                            Reference referenceImagesToUpload =
-                                referenceDirImages
-                                    .child(_image!.path.split("/").last);
                             try {
-                              final uploadTask = await referenceImagesToUpload
-                                  .putFile(File(_image!.path));
-                              final downloadUrl =
-                                  await uploadTask.ref.getDownloadURL();
+                              if (_image != null) {
+                                setState(() {
+                                  isLoading = true;
+                                });
+                                Reference referenceRoot =
+                                    FirebaseStorage.instance.ref();
+                                Reference referenceDirImages =
+                                    referenceRoot.child("images");
+                                Reference referenceImagesToUpload =
+                                    referenceDirImages
+                                        .child(_image!.path.split("/").last);
+                                final uploadTask = await referenceImagesToUpload
+                                    .putFile(File(_image!.path));
+                                final downloadUrl =
+                                    await uploadTask.ref.getDownloadURL();
+                                _imageUrl = downloadUrl;
+                              }
 
-                              // Add Firebase Cloud Firestore functionality here
-                              final CollectionReference posts =
-                                  FirebaseFirestore.instance
-                                      .collection('posts');
-                              final User? user = _auth.currentUser;
-                              final String? userEmail = user?.email;
-                              await posts.add({
+                              _firestore
+                                  .collection('posts')
+                                  .doc(widget.post.id)
+                                  .update({
                                 'name': _nameController.text,
                                 'type': _selectedType,
                                 'age': _ageController.text,
                                 'size': _sizeController.text,
                                 'description': _postTextController.text,
-                                'image_url': downloadUrl,
-                                'email': userEmail,
-                                'timestamp': Timestamp.now(),
-                                'username': _username,
-                                'phoneNumber': _phoneNumber,
-                                'location': GeoPoint(
-                                    _location!.latitude, _location!.longitude),
-                                'isFavorite': false,
-                                'deviceToken': _deviceToken,
-                                'userID': _userID,
+                                'image_url': _imageUrl,
                               });
                               setState(() {
                                 isLoading = false;
                               });
+                              Navigator.of(context).pop();
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content:
-                                        Text('Post uploaded successfully')),
-                              );
-                              await Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => BottomNavBarScreen()),
+                                SnackBar(content: Text('Post has been edited')),
                               );
                             } catch (e) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -272,10 +234,13 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
                             }
                           }
                         },
-                        child:
-                            Text('Post', style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xffC67C4E)),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStatePropertyAll(
+                                Theme.of(context).colorScheme.primary)),
+                        child: Text(
+                          'Save Edits',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
@@ -336,39 +301,62 @@ class _AddPostAdoptScreenState extends State<AddPostAdoptScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _postTextController.dispose();
-    _nameController.dispose();
-    _ageController.dispose();
-    _sizeController.dispose();
-    super.dispose();
-  }
-}
-
-class LatLng {
-  final double latitude;
-  final double longitude;
-
-  LatLng({required this.latitude, required this.longitude});
-}
-
-class CurrentLocation {
-  static Future<LatLng> getCurrentLocation() async {
-    final status = await Permission.location.status;
-    if (!status.isGranted) {
-      final result = await Permission.location.request();
-      if (result != PermissionStatus.granted) {
-        throw 'Location permission denied';
-      }
-    }
-
-    try {
-      final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high);
-      return LatLng(latitude: position.latitude, longitude: position.longitude);
-    } catch (e) {
-      throw 'Error getting current location: $e';
-    }
+  Future<void> _showDeleteDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        title: Text('Are You Sure To Delete This Post?'),
+        content: Text(
+            'If you sure, press Delete and this post will permanently deleted'),
+        actions: [
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.background,
+                borderRadius: BorderRadius.circular(15)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(Colors.grey.shade400)),
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onPressed: () async {
+                    try {
+                      await _firestore
+                          .collection('posts')
+                          .doc(widget.post.id)
+                          .delete();
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Post has been deleted')),
+                      );
+                    } catch (e) {}
+                  },
+                ),
+                TextButton(
+                  style: ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                          Theme.of(context).colorScheme.primary)),
+                  child: Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
