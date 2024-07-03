@@ -146,6 +146,8 @@ class _MissingScreenState extends State<MissingScreen> {
                                 timestamp: thisItem['timestamp'],
                                 username: thisItem['username'],
                                 phoneNumber: thisItem['phoneNumber'],
+                                deviceToken: thisItem['deviceToken'],
+                                userID: thisItem['UserID'],
                               ),
                             ),
                           ),
@@ -214,7 +216,7 @@ class _MissingScreenState extends State<MissingScreen> {
         child: FloatingActionButton(
           backgroundColor: Theme.of(context).colorScheme.background,
           onPressed: () async => Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => AddPostMissing()),
+            MaterialPageRoute(builder: (context) => AddPostMissing(userID: '_userID',)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

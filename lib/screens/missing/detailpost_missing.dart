@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+
+import '../services/pushNotifications.dart';
 
 class DetailPostMissingScreen extends StatefulWidget {
   final String name;
@@ -14,7 +17,9 @@ class DetailPostMissingScreen extends StatefulWidget {
   final String image_url;
   final Timestamp timestamp;
   final String username;
+  final String deviceToken;
   final String phoneNumber;
+  final String userID;
 
   const DetailPostMissingScreen(
       {super.key,
@@ -25,7 +30,8 @@ class DetailPostMissingScreen extends StatefulWidget {
       required this.description,
       required this.image_url,
       required this.timestamp,
-      required this.username,
+      required this.username, required this.deviceToken,
+      required this.userID,
       required this.phoneNumber});
 
   @override
@@ -255,14 +261,9 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
               const SizedBox(height: 20.0),
               // Komentar
               ExpandablePanel(
-                header: Row(
-                  children: [
-                    Text(
-                      "Comments",
-                      style: TextStyle(
-                          fontSize: 20.0, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+                header: const Text(
+                  "Comments",
+                  style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
                 ),
                 collapsed: const Text(""),
                 expanded: Padding(
@@ -431,23 +432,36 @@ class _DetailPostMissingScreenState extends State<DetailPostMissingScreen> {
   }
 
   void _addComment() async {
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    final String username = '${widget.email}'; // replace with actual username
-    final String text = _commentController.text;
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+      final DocumentSnapshot snapshot = await _firestore.collection('users').doc(user.uid).get();
+      final String username = snapshot.get('username').toString();
+      final String text = _commentController.text;
+      final String deviceToken = widget.deviceToken;
 
-    await _firestore
-        .collection('posts')
-        .doc(widget.name)
-        .collection('comments')
-        .add({
-      'username': username,
-      'text': text,
-    });
+      try {
+        await _firestore
+            .collection('posts')
+            .doc(widget.name)
+            .collection('comments')
+            .add({
+          'username': username,
+          'text': text,
+        });
 
-    setState(() {
-      _comments.add(Comment(text: text, username: username));
-      _commentController.clear();
-    });
+        await PushNotifications.sendNotificationToUser(deviceToken, widget.userID, username, context);
+
+        setState(() {
+          _comments.add(Comment(text: text, username: username));
+          _commentController.clear();
+        });
+      } catch (e) {
+        print('Error adding comment: $e');
+      }
+    } else {
+      print("No user is logged in.");
+    }
   }
 }
 
@@ -459,9 +473,9 @@ class Comment {
 
   Comment(
       {this.id = '',
-      required this.username,
-      required this.text,
-      this.replies = const []});
+        required this.username,
+        required this.text,
+        this.replies = const []});
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     return Comment(

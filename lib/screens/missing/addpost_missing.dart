@@ -7,6 +7,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:petlv/screens/services/buttocks_bar.dart';
 
 class AddPostMissing extends StatefulWidget {
+  String userID;
+
+  AddPostMissing({super.key, required this.userID});
+
   @override
   _AddPostMissingState createState() => _AddPostMissingState();
 }
@@ -21,11 +25,14 @@ class _AddPostMissingState extends State<AddPostMissing> {
   String _username = '';
   String _phoneNumber = '';
   String _deviceToken = '';
+  String _userID = '';
   final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
-    super.initState();
     _loadUserData();
+    _userID = widget.userID;
+    print(_userID);
+    super.initState();
   }
 
   Future<void> _loadUserData() async {
